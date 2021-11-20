@@ -1,0 +1,395 @@
+<?xml version="1.0"?>
+    <robot name="amass">
+        <link name="root">
+            <inertial>
+                <origin xyz="0.0022958783 0.23925036 -0.032829516" rpy="0 0 0"/>
+                <mass value="5"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="collision_0_root">
+                <origin xyz="0.00354 0.065 -0.03107" rpy="0 1.5708 0"/>
+                <geometry>
+                    <sphere radius="0.05" length="0.115"/>
+                </geometry>
+            </collision>
+            <collision name="collision_1_root">
+                <origin xyz="-0.05769 -0.02577 -0.0174" rpy="0 0 0"/>
+                <geometry>
+                    <sphere radius="0.075"/>
+                </geometry>
+            </collision>
+            <collision name="collision_2_root">
+                <origin xyz="0.06735 -0.02415 -0.0174" rpy="0 0 0"/>
+                <geometry>
+                    <sphere radius="0.075"/>
+                </geometry>
+            </collision>
+        </link>
+        <link name="lhip">
+            <inertial>
+                <origin xyz="0.015091371 -0.17568566 -0.002787264" rpy="0 0 0"/>
+                <mass value="5"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="lhip">
+                <origin xyz="0.015091371 -0.17568566 -0.002787264" rpy="1.5866600582844128 0.08567876689055898 0.0870471318831514"/>
+                <geometry>
+                    <capsule radius="0.05" length="0.2527093529701233"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="lhip" type="spherical">
+            <origin xyz="0.070026524 -0.09187725 -0.0043991487" rpy="0 0 0"/>
+            <parent link="root"/>
+            <child link="lhip"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="lknee">
+            <inertial>
+                <origin xyz="-0.007154897 -0.18788522 -0.02180244" rpy="0 0 0"/>
+                <mass value="3"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="lknee">
+                <origin xyz="-0.007154897 -0.18788522 -0.02180244" rpy="1.6863209076519483 -0.03780935168411137 -0.04244919029949287"/>
+                <geometry>
+                    <capsule radius="0.05" length="0.27856253981590273"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="lknee" type="spherical">
+            <origin xyz="0.030182742 -0.35137132 -0.005574528" rpy="0 0 0"/>
+            <parent link="lhip"/>
+            <child link="lknee"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="lankle">
+            <inertial>
+                <origin xyz="0.01719 -0.06032 0.02617" rpy="0 0 0"/>
+                <mass value="1"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="lankle">
+                <origin xyz="0.01719 -0.06032 0.02617" rpy="0 0 0"/>
+                <geometry>
+                    <box size="0.0875 0.06 0.185"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="lankle" type="spherical">
+            <origin xyz="-0.014309794 -0.37577045 -0.04360488" rpy="0 0 0"/>
+            <parent link="lknee"/>
+            <child link="lankle"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="rhip">
+            <inertial>
+                <origin xyz="-0.01671334 -0.18019283 -0.0049349666" rpy="0 0 0"/>
+                <mass value="5"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="rhip">
+                <origin xyz="-0.01671334 -0.18019283 -0.0049349666" rpy="1.598176623745954 -0.09245343670451578 -0.09501632981660123"/>
+                <geometry>
+                    <capsule radius="0.05" length="0.2620671033859253"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="rhip" type="spherical">
+            <origin xyz="-0.06850709 -0.09085429 -0.0019410979" rpy="0 0 0"/>
+            <parent link="root"/>
+            <child link="rhip"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="rknee">
+            <inertial>
+                <origin xyz="0.007986549 -0.18836221 -0.021312755" rpy="0 0 0"/>
+                <mass value="3"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="rknee">
+                <origin xyz="0.007986549 -0.18836221 -0.021312755" rpy="1.6834648699120633 0.04210622138609521 0.047137353579786594"/>
+                <geometry>
+                    <capsule radius="0.05" length="0.2794645667076111"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="rknee" type="spherical">
+            <origin xyz="-0.03342668 -0.36038566 -0.009869933" rpy="0 0 0"/>
+            <parent link="rhip"/>
+            <child link="rknee"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="rankle">
+            <inertial>
+                <origin xyz="-0.01719 -0.06032 0.02617" rpy="0 0 0"/>
+                <mass value="1"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="rankle">
+                <origin xyz="-0.01719 -0.06032 0.02617" rpy="0 0 0"/>
+                <geometry>
+                    <box size="0.0875 0.06 0.185"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="rankle" type="spherical">
+            <origin xyz="0.015973099 -0.37672442 -0.04262551" rpy="0 0 0"/>
+            <parent link="rknee"/>
+            <child link="rankle"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="lowerback">
+            <inertial>
+                <origin xyz="0.0 0.05 0.013" rpy="0 0 0"/>
+                <mass value="5"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="lowerback">
+                <origin xyz="0.0 0.05 0.013" rpy="0 0 0"/>
+                <geometry>
+                    <sphere radius="0.065"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="lowerback" type="spherical">
+            <origin xyz="-0.0025027278 0.111586586 -0.031580206" rpy="0 0 0"/>
+            <parent link="root"/>
+            <child link="lowerback"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="upperback">
+            <inertial>
+                <origin xyz="0.0 0.02246 0.00143" rpy="0 0 0"/>
+                <mass value="5"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="upperback">
+                <origin xyz="0.0 0.02246 0.00143" rpy="0 0 0"/>
+                <geometry>
+                    <sphere radius="0.05"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="upperback" type="spherical">
+            <origin xyz="0.0063836724 0.1392814 0.0005028264" rpy="0 0 0"/>
+            <parent link="lowerback"/>
+            <child link="upperback"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="chest">
+            <inertial>
+                <origin xyz="0.0 0.057 -0.00687" rpy="0 0 0"/>
+                <mass value="8"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="chest0">
+                <origin xyz="0.045 0.057 -0.00687" rpy="0 0 0"/>
+                <geometry>
+                    <sphere radius="0.07"/>
+                </geometry>
+            </collision>
+            <collision name="chest1">
+                <origin xyz="-0.045 0.057 -0.00687" rpy="0 0 0"/>
+                <geometry>
+                    <sphere radius="0.07"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="chest" type="spherical">
+            <origin xyz="0.0013776754 0.055739686 0.02660632" rpy="0 0 0"/>
+            <parent link="upperback"/>
+            <child link="chest"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="lowerneck">
+            <inertial>
+                <origin xyz="0 0 0.046503447" rpy="0 0 0"/>
+                <mass value="0.5"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="lowerneck">
+                <origin xyz="0 0 0.046503447" rpy="-1.5707963267948966 0.0 0.0"/>
+                <geometry>
+                    <capsule radius="0.03" length="0.02358324319124222"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="lowerneck" type="spherical">
+            <origin xyz="-0.0027682455 0.21957366 -0.046503447" rpy="0 0 0"/>
+            <parent link="chest"/>
+            <child link="lowerneck"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="upperneck">
+            <inertial>
+                <origin xyz="0 0.0775 0" rpy="0 0 0"/>
+                <mass value="3"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="upperneck">
+                <origin xyz="0 0.0775 0" rpy="-1.5707963267948966 0.0 0.0"/>
+                <geometry>
+                    <capsule radius="0.06" length="0.035"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="upperneck" type="spherical">
+            <origin xyz="0.0054506296 0.06523472 0.051970005" rpy="0 0 0"/>
+            <parent link="lowerneck"/>
+            <child link="upperneck"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="lclavicle">
+            <inertial>
+                <origin xyz="0.048290137 0.013963282 -0.005429638" rpy="0 0 0"/>
+                <mass value="1"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="lclavicle">
+                <origin xyz="0.048290137 0.013963282 -0.005429638" rpy="-1.9416548108358873 1.2699667271735358 -1.6449199458639447"/>
+                <geometry>
+                    <capsule radius="0.04" length="0.02112154483795166"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="lclavicle" type="spherical">
+            <origin xyz="0.08264007 0.12538418 -0.035432834" rpy="0 0 0"/>
+            <parent link="chest"/>
+            <child link="lclavicle"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="lshoulder">
+            <inertial>
+                <origin xyz="0.12587026 -0.0047675744 -0.013698675" rpy="0 0 0"/>
+                <mass value="2"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="lshoulder">
+                <origin xyz="0.12587026 -0.0047675744 -0.013698675" rpy="2.8066723189337335 1.4560678285323894 2.7667606875461908"/>
+                <geometry>
+                    <box size="0.05 0.05 0.23340643525123597"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="lshoulder" type="spherical">
+            <origin xyz="0.096580274 0.027926564 -0.010859276" rpy="0 0 0"/>
+            <parent link="lclavicle"/>
+            <child link="lshoulder"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="lelbow">
+            <inertial>
+                <origin xyz="0.12142575 0.0039100796 -0.000299735" rpy="0 0 0"/>
+                <mass value="1"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="lelbow">
+                <origin xyz="0.12142575 0.0039100796 -0.000299735" rpy="-1.647303707323413 1.5385116700231958 -1.6150737132701063"/>
+                <geometry>
+                    <box size="0.05 0.05 0.22297811090946199"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="lelbow" type="spherical">
+            <origin xyz="0.25174052 -0.009535149 -0.02739735" rpy="0 0 0"/>
+            <parent link="lshoulder"/>
+            <child link="lelbow"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="lwrist">
+            <inertial>
+                <origin xyz="0.04 0 0" rpy="0 0 0"/>
+                <mass value="0.5"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="lwrist">
+                <origin xyz="0.04 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <sphere radius="0.04"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="lwrist" type="fixed">
+            <origin xyz="0.2428515 0.007820159 -0.00059947" rpy="0 0 0"/>
+            <parent link="lelbow"/>
+            <child link="lwrist"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="rclavicle">
+            <inertial>
+                <origin xyz="-0.050943915 0.015114479 -0.0054066735" rpy="0 0 0"/>
+                <mass value="1"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="rclavicle">
+                <origin xyz="-0.050943915 0.015114479 -0.0054066735" rpy="-1.914327484035128 -1.2655449986462208 1.611174546726785"/>
+                <geometry>
+                    <capsule radius="0.04" length="0.02682624578475952"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="rclavicle" type="spherical">
+            <origin xyz="-0.08607158 0.12210029 -0.040182866" rpy="0 0 0"/>
+            <parent link="chest"/>
+            <child link="rclavicle"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="rshoulder">
+            <inertial>
+                <origin xyz="-0.12336299 -0.004860863 -0.011087633" rpy="0 0 0"/>
+                <mass value="2"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="rshoulder">
+                <origin xyz="-0.12336299 -0.004860863 -0.011087633" rpy="2.728423673947441 -1.4729735950156493 -2.687275999149095"/>
+                <geometry>
+                    <box size="0.05 0.05 0.22791118502616883"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="rshoulder" type="spherical">
+            <origin xyz="-0.10188783 0.030228958 -0.010813347" rpy="0 0 0"/>
+            <parent link="rclavicle"/>
+            <child link="rshoulder"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="relbow">
+            <inertial>
+                <origin xyz="-0.123678684 0.0030566677 -0.0026081149" rpy="0 0 0"/>
+                <mass value="1"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="relbow">
+                <origin xyz="-0.123678684 0.0030566677 -0.0026081149" rpy="-2.2771766501247575 -1.5383191770308957 2.2522066518515502"/>
+                <geometry>
+                    <box size="0.05 0.05 0.227487872838974"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="relbow" type="spherical">
+            <origin xyz="-0.24672598 -0.009721726 -0.022175265" rpy="0 0 0"/>
+            <parent link="rshoulder"/>
+            <child link="relbow"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+        <link name="rwrist">
+            <inertial>
+                <origin xyz="-0.04 0 0" rpy="0 0 0"/>
+                <mass value="0.5"/>
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+            </inertial>
+            <collision name="rwrist">
+                <origin xyz="-0.04 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <sphere radius="0.04"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="rwrist" type="fixed">
+            <origin xyz="-0.24735737 0.0061133355 -0.0052162297" rpy="0 0 0"/>
+            <parent link="relbow"/>
+            <child link="rwrist"/>
+            <axis xyz="1 0 0"/>
+        </joint>
+    </robot>

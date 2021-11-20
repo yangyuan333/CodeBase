@@ -1,0 +1,1209 @@
+<robot name = " rigidSMPL_m">
+<link name="base">
+	<inertial>
+		<origin xyz="0.00179506 0.22333345 -0.02821912" rpy="0 0 0"/>
+		<mass value="0.0001"/>
+		<inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+	</inertial>
+</link>
+<link name="root">
+	<inertial>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+		<mass value="5.0"/>
+		<inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+	</inertial>
+	<collision name="collision_0_root">
+		<origin xyz="0.00354 0.065 -0.03107" rpy="0 1.5708 0"/>
+		<geometry>
+			<sphere radius="0.05" length="0.115"/>
+		</geometry>
+	</collision>
+	<collision name="collision_1_root">
+		<origin xyz="-0.05769 -0.02577 -0.0174" rpy="0 0 0"/>
+		<geometry>
+			<sphere radius="0.075"/>
+		</geometry>
+	</collision>
+	<collision name="collision_2_root">
+		<origin xyz="0.06735 -0.02415 -0.0174" rpy="0 0 0"/>
+		<geometry>
+			<sphere radius="0.075"/>
+		</geometry>
+	</collision>
+</link>
+	<joint name="root" type="floating">
+		<parent link = "base" />
+		<child link = "root" />
+		<origin rpy = "0 0 0  " xyz ="0 0 0"  />
+	</joint>
+	<link name = "lhip_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lhip_rx" type = "revolute" >
+		<parent link = "root" />
+		<child link = "lhip_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.088580 -0.082280 -0.017660" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lhip_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lhip_ry" type = "revolute" >
+		<parent link = "lhip_rx" />
+		<child link = "lhip_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "lhip_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lhip_rz" type = "revolute" >
+		<parent link = "lhip_ry" />
+		<child link = "lhip_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "lhip" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.021730 -0.193230 0.004020" />
+			<mass value = "5.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "1.550000 0.111940 0.109640" xyz = "0.021730 -0.193230 0.004020" />
+			<geometry>
+				<cylinder length = "0.300000" radius = "0.050000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "lhip" type = "fixed" >
+		<parent link = "lhip_rz" />
+		<child link = "lhip" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lknee_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lknee_rx" type = "revolute" >
+		<parent link = "lhip" />
+		<child link = "lknee_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.043450 -0.386470 0.008040" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lknee_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lknee_ry" type = "revolute" >
+		<parent link = "lknee_rx" />
+		<child link = "lknee_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "lknee_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lknee_rz" type = "revolute" >
+		<parent link = "lknee_ry" />
+		<child link = "lknee_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "lknee" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "-0.007390 -0.213440 -0.018710" />
+			<mass value = "5.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "1.658250 -0.034500 -0.037660" xyz = "-0.007390 -0.213440 -0.018710" />
+			<geometry>
+				<cylinder length = "0.325000" radius = "0.050000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "lknee" type = "fixed" >
+		<parent link = "lknee_rz" />
+		<child link = "lknee" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lankle_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lankle_rx" type = "revolute" >
+		<parent link = "lknee" />
+		<child link = "lankle_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "-0.014790 -0.426870 -0.037430" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lankle_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lankle_ry" type = "revolute" >
+		<parent link = "lankle_rx" />
+		<child link = "lankle_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "lankle_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lankle_rz" type = "revolute" >
+		<parent link = "lankle_ry" />
+		<child link = "lankle_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "lankle" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.017190 -0.060320 0.026170" />
+			<mass value = "1.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.017190 -0.060320 0.026170" />
+			<geometry>
+				<box size = "0.087500 0.060000 0.185000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "lankle" type = "fixed" >
+		<parent link = "lankle_rz" />
+		<child link = "lankle" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lfoot_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lfoot_rz" type = "revolute" >
+		<parent link = "lankle" />
+		<child link = "lfoot_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.01719 -0.09032 0.11867" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "ltoe" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "0 1.54 0" xyz = "0 0 0" />
+			<geometry>
+				<cylinder length = "0.08" radius = "0.0050000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "ltoe" type = "revolute" >
+		<parent link = "lfoot_rz" />
+		<child link = "ltoe" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0 0 0" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "lheel">
+		<inertial>
+			<origin rpy = "0 0 0"  xyz = "0 0 0" />
+			<mass value =  "0.0001" />
+			<inertia ixx = "0.1" ixy = "0" ixz = "0" iyy = "0.1" iyz = "0" izz = "0.1" />
+		</inertial>
+		<collision>
+			<origin rpy = "0 1.54 0"  xyz = "0 0 0" />
+			<geometry>
+				<cylinder length="0.08" radius="0.005"/>
+			</geometry>
+		</collision>
+	</link>
+	<joint name="lheel" type="revolute">
+		<parent link = "ltoe" />
+		<child link = "lheel" />
+		<origin rpy = "0 0 0" xyz ="0 0 -0.185"  /> 
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.0 1.0 0.0" />
+	</joint>
+	<link name = "rhip_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rhip_rx" type = "revolute" >
+		<parent link = "root" />
+		<child link = "rhip_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "-0.090310 -0.090510 -0.013540" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "rhip_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rhip_ry" type = "revolute" >
+		<parent link = "rhip_rx" />
+		<child link = "rhip_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "rhip_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rhip_rz" type = "revolute" >
+		<parent link = "rhip_ry" />
+		<child link = "rhip_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "rhip" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "-0.021630 -0.191840 -0.002420" />
+			<mass value = "5.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "1.583420 -0.112260 -0.113680" xyz = "-0.021630 -0.191840 -0.002420" />
+			<geometry>
+				<cylinder length = "0.300000" radius = "0.050000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "rhip" type = "fixed" >
+		<parent link = "rhip_rz" />
+		<child link = "rhip" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "rknee_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rknee_rx" type = "revolute" >
+		<parent link = "rhip" />
+		<child link = "rknee_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "-0.043260 -0.383690 -0.004840" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "rknee_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rknee_ry" type = "revolute" >
+		<parent link = "rknee_rx" />
+		<child link = "rknee_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "rknee_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rknee_rz" type = "revolute" >
+		<parent link = "rknee_ry" />
+		<child link = "rknee_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "rknee" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.009530 -0.210020 -0.017280" />
+			<mass value = "3.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "1.652890 0.045180 0.049050" xyz = "0.009530 -0.210020 -0.017280" />
+			<geometry>
+				<cylinder length = "0.325000" radius = "0.050000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "rknee" type = "fixed" >
+		<parent link = "rknee_rz" />
+		<child link = "rknee" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "rankle_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rankle_rx" type = "revolute" >
+		<parent link = "rknee" />
+		<child link = "rankle_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.019060 -0.420050 -0.034560" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "rankle_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rankle_ry" type = "revolute" >
+		<parent link = "rankle_rx" />
+		<child link = "rankle_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "rankle_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rankle_rz" type = "revolute" >
+		<parent link = "rankle_ry" />
+		<child link = "rankle_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "rankle" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "-0.017420 -0.062020 0.029690" />
+			<mass value = "1.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "0.000000 0.000000 0.000000" xyz = "-0.017420 -0.062020 0.029690" />
+			<geometry>
+				<box size = "0.087500 0.060000 0.185000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "rankle" type = "fixed" >
+		<parent link = "rankle_rz" />
+		<child link = "rankle" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "rfoot_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rfoot_rz" type = "revolute" >
+		<parent link = "rankle" />
+		<child link = "rfoot_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "-0.017420 -0.092 0.12219" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "rtoe" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "0 1.54 0" xyz = "0 0 0" />
+			<geometry>
+				<cylinder length = "0.08" radius = "0.0050000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "rtoe" type = "revolute" >
+		<parent link = "rfoot_rz" />
+		<child link = "rtoe" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0 0 0" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "rheel">
+		<inertial>
+			<origin rpy = "0 0 0"  xyz = "0 0 0" />
+			<mass value =  "0.0001" />
+			<inertia ixx = "0.1" ixy = "0" ixz = "0" iyy = "0.1" iyz = "0" izz = "0.1" />
+		</inertial>
+		<collision>
+			<origin rpy = "0 1.54 0"  xyz = "0 0 0" />
+			<geometry>
+				<cylinder length="0.08" radius="0.005"/>
+			</geometry>
+		</collision>
+	</link>
+	<joint name="rheel" type="revolute">
+		<parent link = "rtoe" />
+		<child link = "rheel" />
+		<origin rpy = "0 0 0" xyz ="0 0 -0.185"  /> 
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.0 1.0 0.0" />
+	</joint>
+	<link name = "lowerback_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lowerback_rx" type = "revolute" >
+		<parent link = "root" />
+		<child link = "lowerback_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.124400 -0.030000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lowerback_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lowerback_ry" type = "revolute" >
+		<parent link = "lowerback_rx" />
+		<child link = "lowerback_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "lowerback_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lowerback_rz" type = "revolute" >
+		<parent link = "lowerback_ry" />
+		<child link = "lowerback_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "lowerback" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.050000 0.013000" />
+			<mass value = "5.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "0.000000 1.570800 0.000000" xyz = "0.000000 0.060000 0.013000" />
+			<geometry>
+				<sphere radius = "0.065000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "lowerback" type = "fixed" >
+		<parent link = "lowerback_rz" />
+		<child link = "lowerback" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "upperback_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "upperback_rx" type = "revolute" >
+		<parent link = "lowerback" />
+		<child link = "upperback_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.137960 0.026820" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "upperback_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "upperback_ry" type = "revolute" >
+		<parent link = "upperback_rx" />
+		<child link = "upperback_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "upperback_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "upperback_rz" type = "revolute" >
+		<parent link = "upperback_ry" />
+		<child link = "upperback_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "upperback" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.022460 0.001430" />
+			<mass value = "5.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "0.000000 1.570800 0.000000" xyz = "0.000000 0.032460 0.001430" />
+			<geometry>
+				<sphere radius = "0.050000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "upperback" type = "fixed" >
+		<parent link = "upperback_rz" />
+		<child link = "upperback" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "chest_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "chest_rx" type = "revolute" >
+		<parent link = "upperback" />
+		<child link = "chest_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.056030 0.002850" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "chest_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "chest_ry" type = "revolute" >
+		<parent link = "chest_rx" />
+		<child link = "chest_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "chest_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "chest_rz" type = "revolute" >
+		<parent link = "chest_ry" />
+		<child link = "chest_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+    <link name="chest">
+      <inertial>
+        <origin xyz="0.0 0.057 -0.00687" rpy="0 0 0"/>
+        <mass value="8.0"/>
+        <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+      </inertial>
+      <collision name="collision_0_chest">
+        <origin xyz="-0.045 0.057 -0.00687" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.07"/>
+        </geometry>
+      </collision>
+      <collision name="collision_1_chest">
+        <origin xyz="0.045 0.057 -0.00687" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.07"/>
+        </geometry>
+      </collision>
+    </link>
+	<joint name = "chest" type = "fixed" >
+		<parent link = "chest_rz" />
+		<child link = "chest" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lowerneck_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lowerneck_rx" type = "revolute" >
+		<parent link = "chest" />
+		<child link = "lowerneck_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.155240 -0.033470" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lowerneck_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lowerneck_ry" type = "revolute" >
+		<parent link = "lowerneck_rx" />
+		<child link = "lowerneck_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "lowerneck_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lowerneck_rz" type = "revolute" >
+		<parent link = "lowerneck_ry" />
+		<child link = "lowerneck_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "lowerneck" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 -0.012960 0.010000" />
+			<mass value = "0.500000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "1.570800 0.000000 0.000000" xyz = "0.000000 -0.012960 0.010000" />
+			<geometry>
+				<cylinder length = "0.027300" radius = "0.030000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "lowerneck" type = "fixed" >
+		<parent link = "lowerneck_rz" />
+		<child link = "lowerneck" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "upperneck_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.0001001" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "upperneck_rx" type = "revolute" >
+		<parent link = "lowerneck" />
+		<child link = "upperneck_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.088940 0.020410" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "upperneck_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.0001001" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "upperneck_ry" type = "revolute" >
+		<parent link = "upperneck_rx" />
+		<child link = "upperneck_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "upperneck_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.0001001" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "upperneck_rz" type = "revolute" >
+		<parent link = "upperneck_ry" />
+		<child link = "upperneck_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "upperneck" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.002000 0.000000" />
+			<mass value = "3.000000" />
+			<inertia ixx = "0.000100" ixy = "0.000000" ixz = "0.000000" iyy = "0.000100" iyz = "0.000000" izz = "0.000100" />
+		</inertial>
+		<collision>
+			<origin rpy = "1.570800 0.000000 0.000000" xyz = "0.000000 0.002000 0.000000" />
+			<geometry>
+				<cylinder length = "0.035000" radius = "0.060000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "upperneck" type = "fixed" >
+		<parent link = "upperneck_rz" />
+		<child link = "upperneck" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lclavicle_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lclavicle_rx" type = "revolute" >
+		<parent link = "chest" />
+		<child link = "lclavicle_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.071700 0.114000 -0.018900" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lclavicle_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lclavicle_ry" type = "revolute" >
+		<parent link = "lclavicle_rx" />
+		<child link = "lclavicle_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "lclavicle_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lclavicle_rz" type = "revolute" >
+		<parent link = "lclavicle_ry" />
+		<child link = "lclavicle_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "lclavicle" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.061460 0.022600 -0.009520" />
+			<mass value = "1.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "1.172040 1.950490 1.550200" xyz = "0.061460 0.022600 -0.009520" />
+			<geometry>
+				<cylinder length = "0.050000" radius = "0.040000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "lclavicle" type = "fixed" >
+		<parent link = "lclavicle_rz" />
+		<child link = "lclavicle" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lshoulder_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lshoulder_rx" type = "revolute" >
+		<parent link = "lclavicle" />
+		<child link = "lshoulder_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.122920 0.045210 -0.019050" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lshoulder_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lshoulder_ry" type = "revolute" >
+		<parent link = "lshoulder_rx" />
+		<child link = "lshoulder_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "lshoulder_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lshoulder_rz" type = "revolute" >
+		<parent link = "lshoulder_ry" />
+		<child link = "lshoulder_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "lshoulder" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.127670 0.000000 0.000000" />
+			<mass value = "2.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.127670 0.000000 0.000000" />
+			<geometry>
+				<box size = "0.250000 0.050000 0.050000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "lshoulder" type = "fixed" >
+		<parent link = "lshoulder_rz" />
+		<child link = "lshoulder" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lelbow_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lelbow_rx" type = "revolute" >
+		<parent link = "lshoulder" />
+		<child link = "lelbow_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.255330 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lelbow_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lelbow_ry" type = "revolute" >
+		<parent link = "lelbow_rx" />
+		<child link = "lelbow_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "lelbow_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "lelbow_rz" type = "revolute" >
+		<parent link = "lelbow_ry" />
+		<child link = "lelbow_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "lelbow" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.122850 0.000000 0.000000" />
+			<mass value = "1.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.122850 0.000000 0.000000" />
+			<geometry>
+				<box size = "0.220000 0.050000 0.050000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "lelbow" type = "fixed" >
+		<parent link = "lelbow_rz" />
+		<child link = "lelbow" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "lwrist" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.022280 0.000000 0.000000" />
+			<mass value = "0.500000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.022280 0.000000 0.000000" />
+			<geometry>
+				<sphere radius = "0.040000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "lwrist" type = "fixed" >
+		<parent link = "lelbow" />
+		<child link = "lwrist" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.245710 0.000000 0.000000" />
+	</joint>
+	<link name = "rclavicle_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rclavicle_rx" type = "revolute" >
+		<parent link = "chest" />
+		<child link = "rclavicle_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "-0.082950 0.112470 -0.023710" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "rclavicle_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rclavicle_ry" type = "revolute" >
+		<parent link = "rclavicle_rx" />
+		<child link = "rclavicle_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "rclavicle_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rclavicle_rz" type = "revolute" >
+		<parent link = "rclavicle_ry" />
+		<child link = "rclavicle_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "rclavicle" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "-0.056610 0.023430 -0.004240" />
+			<mass value = "1.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "-1.749680 -1.172740 1.343620" xyz = "-0.056610 0.023430 -0.004240" />
+			<geometry>
+				<cylinder length = "0.050000" radius = "0.040000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "rclavicle" type = "fixed" >
+		<parent link = "rclavicle_rz" />
+		<child link = "rclavicle" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "rshoulder_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rshoulder_rx" type = "revolute" >
+		<parent link = "rclavicle" />
+		<child link = "rshoulder_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "-0.113230 0.046850 -0.008470" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "rshoulder_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rshoulder_ry" type = "revolute" >
+		<parent link = "rshoulder_rx" />
+		<child link = "rshoulder_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "rshoulder_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "rshoulder_rz" type = "revolute" >
+		<parent link = "rshoulder_ry" />
+		<child link = "rshoulder_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "rshoulder" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "-0.130060 0.000000 0.000000" />
+			<mass value = "2.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "0.000000 0.000000 0.000000" xyz = "-0.130060 0.000000 0.000000" />
+			<geometry>
+				<box size = "0.250000 0.050000 0.050000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "rshoulder" type = "fixed" >
+		<parent link = "rshoulder_rz" />
+		<child link = "rshoulder" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "relbow_rx" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "relbow_rx" type = "revolute" >
+		<parent link = "rshoulder" />
+		<child link = "relbow_rx" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "-0.260130 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "1.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "relbow_ry" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "relbow_ry" type = "revolute" >
+		<parent link = "relbow_rx" />
+		<child link = "relbow_ry" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 1.000000 0.000000" />
+	</joint>
+	<link name = "relbow_rz" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "0.000000 0.000000 0.000000" />
+			<mass value = "0.000100" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+	</link>
+	<joint name = "relbow_rz" type = "revolute" >
+		<parent link = "relbow_ry" />
+		<child link = "relbow_rz" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+		<limit effort = "1000.000000" lower = "-3.140000" upper = "3.140000" velocity = "0.500000" />
+		<axis xyz = "0.000000 0.000000 1.000000" />
+	</joint>
+	<link name = "relbow" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "-0.124550 0.000000 0.000000" />
+			<mass value = "1.000000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "0.000000 0.000000 0.000000" xyz = "-0.124550 0.000000 0.000000" />
+			<geometry>
+				<box size = "0.220000 0.050000 0.050000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "relbow" type = "fixed" >
+		<parent link = "relbow_rz" />
+		<child link = "relbow" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "0.000000 0.000000 0.000000" />
+	</joint>
+	<link name = "rwrist" >
+		<inertial>
+			<origin rpy = "0 0 0" xyz = "-0.023900 0.000000 0.000000" />
+			<mass value = "0.500000" />
+			<inertia ixx = "0.001000" ixy = "0.000000" ixz = "0.000000" iyy = "0.001000" iyz = "0.000000" izz = "0.001000" />
+		</inertial>
+		<collision>
+			<origin rpy = "0.000000 0.000000 0.000000" xyz = "-0.023900 0.000000 0.000000" />
+			<geometry>
+				<sphere radius = "0.040000" />
+			</geometry>
+		</collision>
+	</link>
+	<joint name = "rwrist" type = "fixed" >
+		<parent link = "relbow" />
+		<child link = "rwrist" />
+		<origin rpy = "0.000000 0.000000 0.000000" xyz = "-0.249110 0.000000 0.000000" />
+	</joint>
+</robot>
