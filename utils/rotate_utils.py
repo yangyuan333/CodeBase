@@ -3,11 +3,14 @@ import numpy as np
 import math
 
 def Camera_project(points, externalMat=None, internalMat=None):
-    if (externalMat == None).all():
+    '''
+    points: n
+    '''
+    if externalMat is None:
         return points
     else:
         pointsInCamera = np.dot(externalMat, np.row_stack((points.T, np.ones(points.__len__()))))
-        if (internalMat == None).all():
+        if internalMat is None:
             return pointsInCamera[:3,:].T
         else:
             pointsInImage = np.dot(internalMat, pointsInCamera[:3,:]) / pointsInCamera[2,:][None,:]
