@@ -5,8 +5,8 @@ import glob
 import pickle
 import numpy as np
 
-rootPath = r'H:\YangYuan\Code\cpp_program\seuvcl-codebase-master\data\graphics\physdata\motionDataPKL\qulitative_results'
-saveRootPath = r'H:\YangYuan\Code\cpp_program\seuvcl-codebase-master\data\graphics\physdata\motionData\qulitative_results'
+rootPath = r'H:\YangYuan\Code\cpp_program\seuvcl-codebase-master2\data\graphics\physdata\motionDataPKL\0013_smooth_301_400'
+saveRootPath = r'H:\YangYuan\Code\cpp_program\seuvcl-codebase-master2\data\graphics\physdata\motionData\0013_smooth_301_400'
 os.makedirs(saveRootPath, exist_ok=True)
 for path in glob.glob(os.path.join(rootPath, '*')):
     pklPath = path
