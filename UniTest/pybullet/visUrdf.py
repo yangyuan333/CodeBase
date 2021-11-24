@@ -12,7 +12,7 @@ z2y = p.getQuaternionFromEuler([-math.pi * 0.5, 0, 0])
 planeId = p.loadURDF("plane.urdf", [0,0,0], z2y, useMaximalCoordinates=True)
 # 0.8
 physcapHuman = p.loadURDF(
-    fileName = r'./data/temdata/shape-ToeHeel.urdf',
+    fileName = r'./data/urdf/github.urdf',
     basePosition = [0,0.75,0],
     baseOrientation = p.getQuaternionFromEuler([0,0,0]),
     globalScaling = 1,

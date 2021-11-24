@@ -4,9 +4,11 @@ import os
 import glob
 import pickle
 import numpy as np
-
-rootPath = r'H:\YangYuan\Code\cpp_program\seuvcl-codebase-master2\data\graphics\physdata\motionDataPKL\0027_full_frc3_SMPL'
-saveRootPath = r'H:\YangYuan\Code\cpp_program\seuvcl-codebase-master2\data\graphics\physdata\motionData\0027_full_frc3_SMPL'
+import shutil
+rootPath = r'\\105.1.1.112\Results_CVPR2022\physcap_dynamic_3DOH-new\results\0013'
+saveRootPath = r'H:\YangYuan\Code\cpp_program\seuvcl-codebase-master2\data\graphics\physdata\motionData\physcap0013'
+if os.path.exists(saveRootPath):
+    shutil.rmtree(saveRootPath)
 os.makedirs(saveRootPath, exist_ok=True)
 for path in glob.glob(os.path.join(rootPath, '*')):
     pklPath = path
