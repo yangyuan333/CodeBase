@@ -1,18 +1,8 @@
-import json
-import pickle
-import sys
-sys.path.append('./')
-from utils.rotate_utils import *
-from utils.smpl_utils import *
+from scipy import integrate
 import numpy as np
-import cv2
-import pickle
+import math
+def f(x, y):
+    return math.tan(x*x+y*y)
 
-path = r'H:\YangYuan\Code\phy_program\CodeBase\data\temdata\0000000013.pkl'
-with open(path, 'rb') as file:
-    data = pickle.load(file)
-print(1)
-
-with open(r'H:\YangYuan\Code\phy_program\CodeBase\data\temdata\0000000013_00.json', 'r') as file:
-    jsonData = json.load(file)
-print(2)
+v, err = integrate.dblquad(f, 0, math.pi/3, lambda x: 0, lambda x: math.pi/6)
+print(v)
