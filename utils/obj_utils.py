@@ -83,6 +83,7 @@ def Scaling_obj(file_name, save_file):
     for data in strData:
         file.write(data)
     file.close()
+
 if __name__ == '__main__':
     Scaling_obj(
         r'H:\YangYuan\Code\cpp_program\seuvcl-codebase-master\data\graphics\physdata\urdf\0000.obj',

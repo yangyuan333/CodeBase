@@ -278,5 +278,8 @@ class SMPLModel(Module):
             joints = torch.tensordot(result, self.J_regressor.transpose(0, 1), dims=([1], [0])).transpose(1, 2)
         return result, joints
 
+def AddRot():
+    pass
+
 if __name__ == '__main__':
     pass    
