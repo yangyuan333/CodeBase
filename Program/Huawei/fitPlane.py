@@ -10,8 +10,8 @@ import pickle as pkl
 import torch
 Smpl = SMPLModel()
 
-path = R'\\105.1.1.112\e\huawei_data\aligned'
-file = 'demo3'
+path = R'H:\YangYuan\Code\phy_program\CodeBase\data\temdata\results'
+file = 'params'
 joints = []
 
 videoPath = os.path.join(path, file)
@@ -23,7 +23,7 @@ for framePath in videoPaths:
     betas = data['person00']['betas']
     transl = data['person00']['transl']
     vs, js = Smpl(
-        torch.tensor(betas[None,:].astype(np.float32)),
+        torch.tensor(betas.astype(np.float32)),
         torch.tensor(pose[None,:].astype(np.float32)),
         torch.tensor(transl[None,:].astype(np.float32)),
         torch.tensor([[1.0]])
@@ -33,14 +33,18 @@ for framePath in videoPaths:
 
 meshData = MeshData()
 meshData.vert = joints
-write_obj('./data/temdata/plane0.obj', meshData)
+write_obj('./data/temdata/results/plane0.obj', meshData)
+
+## 手动滤波
+meshData = read_obj('./data/temdata/results/demo3Filter.obj')
+joints = meshData.vert
 
 jointsNew = np.array(joints)[:,[0,2,1]]
 a = planeFit(np.array(jointsNew))
 xyzMax = np.max(np.array(jointsNew), axis=0)
 xyzMin = np.min(np.array(jointsNew), axis=0)
 xyz = []
-ratio = 1000
+ratio = 100
 for i in range(ratio):
     for j in range(ratio):
         x = xyzMin[0] + (xyzMax[0]-xyzMin[0]) * i / ratio
@@ -50,4 +54,4 @@ for i in range(ratio):
 
 meshData = MeshData()
 meshData.vert = np.array(xyz)[:,[0,2,1]]
-write_obj('./data/temdata/plane1.obj', meshData)
+write_obj('./data/temdata/results/plane1.obj', meshData)

@@ -12,9 +12,9 @@ import shutil
 Smpl = SMPLModel()
 meshdata = read_obj(R"./data/smpl/template.obj")
 
-path = R'\\105.1.1.112\e\huawei_data\aligned'
-videos = ['demo1','demo2','demo3']
-temPath = R'./data/temdata'
+path = R'H:\YangYuan\Code\phy_program\CodeBase\data\temdata\results'
+videos = ['demo1','demo2','demo3','params']
+temPath = R'H:\YangYuan\Code\phy_program\CodeBase\data\temdata\results\trans'
 
 for video in videos:
     if os.path.exists(os.path.join(temPath,video)):
@@ -29,7 +29,7 @@ for video in videos:
         betas = data['person00']['betas']
         transl = data['person00']['transl']
         vs, js = Smpl(
-            torch.tensor(betas[None,:].astype(np.float32)),
+            torch.tensor(betas.astype(np.float32)),
             torch.tensor(pose[None,:].astype(np.float32)),
             torch.tensor(transl[None,:].astype(np.float32)),
             torch.tensor([[1.0]])

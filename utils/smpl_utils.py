@@ -6,6 +6,7 @@ import os
 import sys
 sys.path.append('./')
 from utils import obj_utils
+from utils.rotate_utils import *
 
 class SMPLModel(Module):
     def __init__(self, device=None, model_path='./data/smpl/SMPL_NEUTRAL.pkl',
@@ -278,8 +279,40 @@ class SMPLModel(Module):
             joints = torch.tensordot(result, self.J_regressor.transpose(0, 1), dims=([1], [0])).transpose(1, 2)
         return result, joints
 
-def AddRot():
-    pass
+def addRot(pose, transl, betas, rot, T):
+    '''
+    pose   : 72
+    transl : 3
+    betas  : 10
+    rot    : 3*3
+    T      : 3
+    '''
+    r = R.from_matrix(rot)
+    smplModel = SMPLModel()
+    poseTem = pose.copy()
+    translTem = transl.copy()
+    poseTem[:3] *= 0
+    _,js = smplModel(
+        torch.tensor(betas.astype(np.float32)),
+        torch.tensor(poseTem[None,:].astype(np.float32)),
+        torch.tensor(np.array([[0,0,0]]).astype(np.float32)),
+        torch.tensor([[1.0]])
+    )
+    j0 = js[0][0].numpy()
+    poseTem[:3] = (r*R.from_rotvec(pose[:3])).as_rotvec()
+    translTem = r.apply(j0 + transl) + T - j0
+    return poseTem, translTem, betas
+
+def rotExmat(rot, T, rotEx,TEx):
+    '''
+    rot   : 3*3
+    T     : 3*1
+    rotEx : 3*3
+    TEx   : 3*1
+    '''
+    rotExTem = np.dot(rotEx,np.linalg.inv(rot))
+    TExTem = TEx - np.dot(rotExTem,T)
+    return rotExTem, TExTem
 
 if __name__ == '__main__':
     pass    

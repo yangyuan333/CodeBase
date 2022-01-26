@@ -12,7 +12,7 @@ import shutil
 Smpl = SMPLModel()
 meshdata = read_obj(R"./data/smpl/template.obj")
 
-path = R'./data/temdata/huawei'
+path = R'./data/temdata/results/huawei'
 videos = ['demo3']
 Js = []
 for video in videos:
@@ -24,8 +24,8 @@ for video in videos:
         pose = data['person00']['pose']
         betas = data['person00']['betas']
         transl = data['person00']['transl']
-        vs, js = Smpl(
-            torch.tensor(betas[None,:].astype(np.float32)),
+        _, js = Smpl(
+            torch.tensor(betas.astype(np.float32)),
             torch.tensor(pose[None,:].astype(np.float32)),
             torch.tensor(transl[None,:].astype(np.float32)),
             torch.tensor([[1.0]])
@@ -35,8 +35,9 @@ for video in videos:
 
 Js = np.array(Js)
 JsMean = np.mean(Js, axis = 0)
-rotpath = R'./data/temdata/huawei'
-transpath = R'./data/temdata/huaweiT'
+print(-JsMean)
+rotpath = R'./data/temdata/results/huawei'
+transpath = R'./data/temdata/results/huaweiT'
 if os.path.exists(os.path.join(transpath,videos[0])):
     shutil.rmtree(os.path.join(transpath,videos[0]))
 os.makedirs(os.path.join(transpath,videos[0]),exist_ok=True)

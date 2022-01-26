@@ -12,8 +12,8 @@ from utils.rotate_utils import *
 import pickle
 
 class Config(object):
-    urdfPath = r'./data/temdata/shape-normalShape.urdf'
-    transPath = r'./data/temdata/shape-GTA.txt'
+    urdfPath = r'./data/temdata/results/demo3.urdf'
+    transPath = r'./data/temdata/results/demo3.txt'
     iner = 0.001
     ankle_size = [0.0875,0.06,0.185]
     lankle_offset = [0.01719,-0.06032,0.02617]
@@ -62,15 +62,15 @@ smplModel = SMPLModel()
 #     0.04367678, -0.00264158, -0.02082669,  0.01223242, -0.01340746
 # ]
 
-pklPath = r'H:\YangYuan\Code\phy_program\CodeBase\data\GTA_2307_BASE.pkl'
+pklPath = R'H:\YangYuan\Code\phy_program\CodeBase\data\temdata\results\huaweiT\demo3\000000.pkl'
 
 with open(pklPath, 'rb') as file:
     data = pickle.load(file)    
-# betas = data['person00']['betas'][0]
-betas = [
-    0.0, 0.0, 0.0,  0.0,  0.0,
-    0.0, 0.0, 0.0,  0.0, -0.0
-]
+betas = data['person00']['betas'][0]
+# betas = [
+#     0.0, 0.0, 0.0,  0.0,  0.0,
+#     0.0, 0.0, 0.0,  0.0, -0.0
+# ]
 smpl_vs, smpl_js = smplModel(betas=torch.tensor(np.array(betas).astype(np.float32)[None,:]), thetas=torch.tensor(np.zeros((1, 72)).astype(np.float32)), trans=torch.tensor(np.zeros((1, 3)).astype(np.float32)), scale=torch.tensor([1]), gR=None, lsp=False)
 smpl_js = smpl_js.squeeze(0).numpy() # 24*3
 smpl_vs = smpl_vs.squeeze(0).numpy()

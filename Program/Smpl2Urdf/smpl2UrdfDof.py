@@ -13,7 +13,7 @@ from utils.rotate_utils import *
 import pickle
 
 class Config(object):
-    urdfPath = './data/temdata/shape-GPA0130.urdf'
+    urdfPath = './data/temdata/results/demo3Dof.urdf'
     iner = 0.001
     ankle_size = [0.0875,0.06,0.185]
     lankle_offset = [0.01719,-0.06032,0.02617]
@@ -74,7 +74,7 @@ smplModel = SMPLModel()
 #     0.04367678, -0.00264158, -0.02082669,  0.01223242, -0.01340746
 # ]
 
-pklPath = r'H:\YangYuan\Code\phy_program\CodeBase\data\temdata\0000000130.pkl'
+pklPath = R'H:\YangYuan\Code\phy_program\CodeBase\data\temdata\results\huaweiT\demo3\000000.pkl'
 with open(pklPath, 'rb') as file:
     data = pickle.load(file)    
 betas = data['person00']['betas'][0]
@@ -257,7 +257,6 @@ for key, i in enumerate(jointInUrdfIdx):
         link.writeFile(file)
         joint = urdf_utils.Joint(name, 'fixed', name+'_rz', name, [0,0,0], [0,0,0], [1,0,0])
         joint.writeFile(file)
-
     else:
         weigth = Config.weigh[key+1]
         shape = Config.shape[key+1]

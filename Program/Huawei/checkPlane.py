@@ -12,10 +12,10 @@ import shutil
 Smpl = SMPLModel()
 meshdata = read_obj(R"./data/smpl/template.obj")
 
-path = R'./data/temdata/huaweiT'
+path = R'H:\YangYuan\Code\cpp_program\seuvcl-codebase-master2\data\graphics\physdata\motionData\output\new_smooth'
 #videos = ['demo1','demo2','demo3']
-videos = ['demo3']
-temPath = R'./data/temdata/huaweiMesh'
+videos = ['pkl']
+temPath = R'H:\YangYuan\Code\cpp_program\seuvcl-codebase-master2\data\graphics\physdata\motionData\output\new_smooth\smpl'
 
 for video in videos:
     if os.path.exists(os.path.join(temPath,video)):
@@ -30,7 +30,7 @@ for video in videos:
         betas = data['person00']['betas']
         transl = data['person00']['transl']
         vs, js = Smpl(
-            torch.tensor(betas[None,:].astype(np.float32)),
+            torch.tensor(betas.astype(np.float32)),
             torch.tensor(pose[None,:].astype(np.float32)),
             torch.tensor(transl[None,:].astype(np.float32)),
             torch.tensor([[1.0]])
