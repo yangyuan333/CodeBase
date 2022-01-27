@@ -314,5 +314,37 @@ def rotExmat(rot, T, rotEx,TEx):
     TExTem = TEx - np.dot(rotExTem,T)
     return rotExTem, TExTem
 
+def pkl2Smpl(path):
+    with open(path, 'rb') as file:
+        data = pickle.load(file)
+    if 'person00' in data:
+        pose = data['person00']['pose']
+        transl = data['person00']['transl']
+        beta = data['person00']['betas']
+    else:
+        pose = data['pose']
+        transl = data['transl']
+        beta = data['betas']
+    if pose.ndim == 1:
+        pose = pose[None,:].astype(np.float32)
+    else:
+        pose = pose.astype(np.float32)
+    if transl.ndim == 1:
+        transl = transl[None,:].astype(np.float32)
+    else:
+        transl = transl.astype(np.float32) 
+    if beta.ndim == 1:
+        beta = beta[None,:].astype(np.float32)
+    else:
+        beta = beta.astype(np.float32)
+    smplModel = SMPLModel()
+    vs, js = smplModel(
+        torch.tensor(beta),
+        torch.tensor(pose),
+        torch.tensor(transl),
+        torch.tensor([[1.0]])
+    )
+    return vs[0].numpy(), js[0].numpy()
+
 if __name__ == '__main__':
-    pass    
+    pass
