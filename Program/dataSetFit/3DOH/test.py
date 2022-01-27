@@ -20,7 +20,7 @@ def copyFiles(config):
 
 if __name__ == '__main__':
     config = {
-        'rootPath':R'E:\Human-Data-Physics-v1.0\3DOH-GT\params_米制Y轴\0000',
-        'savePath':R'E:\Human-Data-Physics-v1.0\3DOH-physics'
+        'rootPath':R'\\105.1.1.112\e\Human-Data-Physics-v1.0\3DOH-GT\params_米制Y轴\0006',
+        'savePath':R'\\105.1.1.112\e\Human-Data-Physics-v1.0\tem\pkl'
     }
     copyFiles(config)

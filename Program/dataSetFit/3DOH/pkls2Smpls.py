@@ -1,9 +1,8 @@
-from genericpath import exists
 import glob
 import os
 import sys
 
-from pathy import shutil
+import shutil
 sys.path.append('./')
 import pickle as pkl
 
@@ -23,7 +22,7 @@ def pkls2Smpls(config):
 
 if __name__ == '__main__':
     config = {
-        'pklPath':R'E:\Human-Data-Physics-v1.0\3DOH-physics',
-        'savePath':R'E:\Human-Data-Physics-v1.0\tem'
+        'pklPath':R'\\105.1.1.112\e\Human-Data-Physics-v1.0\tem\pkl',
+        'savePath':R'\\105.1.1.112\e\Human-Data-Physics-v1.0\tem\obj'
     }
     pkls2Smpls(config)

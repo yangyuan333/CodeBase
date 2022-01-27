@@ -333,14 +333,14 @@ void getFiles(string path, vector<string>& files)
 
 class BulletRender {
 public:
-	BulletRender(btVector3 gravity= btVector3(0, 0, 0)) {
+	BulletRender(btVector3 gravity = btVector3(0, 0, 0)) {
 		sim = new b3RobotSimulatorClientAPI_NoGUI();
 		bool isConnected = sim->connect(eCONNECT_SHARED_MEMORY);
-		if (!isConnected){
+		if (!isConnected) {
 			printf("Using Direct mode\n");
 			isConnected = sim->connect(eCONNECT_DIRECT);
 		}
-		else{
+		else {
 			printf("Using shared memory\n");
 		}
 		sim->resetSimulation();
@@ -361,6 +361,8 @@ public:
 	void RenderImgVideo(int robotKind, CamMat mat, const vector<string>& imgPaths, const string& savePath, const vector<string>& posePaths, const vector<string>& translPaths, const string& urdfPath);
 	void RenderVideo(int robotKind, CamMat mat, const string& savePath, const vector<string>& posePaths, const vector<string>& translPaths, const string& urdfPath, const string terrainMeshPath = "");
 	void RenderSmplVideo(CamMat mat, const string& savePath, const vector<string>& smplPath, const string terrainMeshPath = "");
+	void RenderSmplImgVideo(CamMat mat, const vector<string>& imgPaths, const string& savePath, const vector<string>& smplPaths);
+
 private:
 	Config config;
 	b3RobotSimulatorClientAPI_NoGUI* sim;
@@ -368,21 +370,21 @@ private:
 
 };
 
-void BulletRender::AmassLoadMotion(int& bodyUid, VectorXf& poses, Vector3f& transl){
+void BulletRender::AmassLoadMotion(int& bodyUid, VectorXf& poses, Vector3f& transl) {
 	if (!poses.size() || !transl.size()) {
 		cout << "error: no poses or no transls data!" << endl;
 		return;
 	}
-	for (auto key = 0; key < 24; key++){
+	for (auto key = 0; key < 24; key++) {
 		int value = config.smplInAmassDof[key];
-		if (key == 0){
+		if (key == 0) {
 			Quaternionf q_out = AxisAngle2Quaternion(Vector3f(poses[key * 3], poses[key * 3 + 1], poses[key * 3 + 2]));
 			sim->resetBasePositionAndOrientation(
 				bodyUid,
 				btVector3(transl[0], transl[1], transl[2]),
 				btQuaternion(q_out.coeffs()[0], q_out.coeffs()[1], q_out.coeffs()[2], q_out.coeffs()[3]));
 		}
-		else{
+		else {
 			Matrix3f R = AxisAngle2Rmat(Vector3f(poses[key * 3], poses[key * 3 + 1], poses[key * 3 + 2]));
 			vector<float> ordered_angles;
 			vector<Eigen::Vector3f> xyz_order = { Eigen::Vector3f::UnitX(), Eigen::Vector3f::UnitY(), Eigen::Vector3f::UnitZ() };
@@ -400,63 +402,63 @@ void BulletRender::AmassLoadMotion(int& bodyUid, VectorXf& poses, Vector3f& tran
 		}
 	}
 }
-void BulletRender::AmassDofLoadMotion(int& bodyUid, VectorXf& poses, Vector3f& transl){
+void BulletRender::AmassDofLoadMotion(int& bodyUid, VectorXf& poses, Vector3f& transl) {
 	if (!poses.size() || !transl.size()) {
 		cout << "error: no poses or no transls data!" << endl;
 		return;
 	}
-	for (auto key = 0; key < 24; key++){
+	for (auto key = 0; key < 24; key++) {
 		int value = config.smplInAmassOneDof[key];
-		if (key == 0){
+		if (key == 0) {
 			Quaternionf q_out = AxisAngle2Quaternion(Vector3f(poses[key * 3], poses[key * 3 + 1], poses[key * 3 + 2]));
 			sim->resetBasePositionAndOrientation(
 				bodyUid,
 				btVector3(transl[0], transl[1], transl[2]),
 				btQuaternion(q_out.coeffs()[0], q_out.coeffs()[1], q_out.coeffs()[2], q_out.coeffs()[3]));
 		}
-		else if (value == -1){
+		else if (value == -1) {
 			continue;
 		}
-		else{
+		else {
 			Matrix3f R = AxisAngle2Rmat(Vector3f(poses[key * 3], poses[key * 3 + 1], poses[key * 3 + 2]));
 			vector<float> ordered_angles;
 			vector<Eigen::Vector3f> xyz_order = { Eigen::Vector3f::UnitX(), Eigen::Vector3f::UnitY(), Eigen::Vector3f::UnitZ() };
 			Rmat2Euler(ordered_angles, R, xyz_order);
 			b3JointInfo jointInfo;
 			sim->getJointInfo(bodyUid, value, &jointInfo);
-			for (auto rotkey = 0; rotkey < 3; rotkey++){
+			for (auto rotkey = 0; rotkey < 3; rotkey++) {
 				int dim = config.smplInAmssOneDofDim[key * 3 + rotkey];
-				if (dim == 1){
+				if (dim == 1) {
 					sim->resetJointState(bodyUid, value + rotkey, ordered_angles[rotkey]);
 				}
 			}
 		}
 	}
 }
-void BulletRender::PhyscapLoadMotion(int& bodyUid, VectorXf& poses, Vector3f& transl){
+void BulletRender::PhyscapLoadMotion(int& bodyUid, VectorXf& poses, Vector3f& transl) {
 	if (!poses.size() || !transl.size()) {
 		cout << "error: no poses or no transls data!" << endl;
 		return;
 	}
-	for (auto key = 0; key < 24; key++){
+	for (auto key = 0; key < 24; key++) {
 		int value = config.smplInPhyscap[key];
-		if (key == 0){
+		if (key == 0) {
 			Quaternionf q_out = AxisAngle2Quaternion(Vector3f(poses[key * 3], poses[key * 3 + 1], poses[key * 3 + 2]));
 			sim->resetBasePositionAndOrientation(
 				bodyUid,
 				btVector3(transl[0], transl[1], transl[2]),
 				btQuaternion(q_out.coeffs()[0], q_out.coeffs()[1], q_out.coeffs()[2], q_out.coeffs()[3]));
 		}
-		else{
+		else {
 			Matrix3f R = AxisAngle2Rmat(Vector3f(poses[key * 3], poses[key * 3 + 1], poses[key * 3 + 2]));
 			vector<float> ordered_angles;
 			vector<Eigen::Vector3f> xyz_order = { Eigen::Vector3f::UnitX(), Eigen::Vector3f::UnitY(), Eigen::Vector3f::UnitZ() };
 			Rmat2Euler(ordered_angles, R, xyz_order);
 			b3JointInfo jointInfo;
 			sim->getJointInfo(bodyUid, value, &jointInfo);
-			for (auto rotkey = 0; rotkey < 3; rotkey++){
+			for (auto rotkey = 0; rotkey < 3; rotkey++) {
 				int dim = config.smplInPhyscapDofDim[key * 3 + rotkey];
-				if (dim == 1){
+				if (dim == 1) {
 					sim->resetJointState(bodyUid, value + rotkey, ordered_angles[rotkey]);
 				}
 			}
@@ -468,7 +470,7 @@ void BulletRender::RenderMotion(int robotKind, CamMat mat, vector<string> posePa
 	int frameNum = posePath.size();
 	vector<VectorXf> poses;
 	vector<Vector3f> transl;
-	for (auto i = 0; i < frameNum; i++){
+	for (auto i = 0; i < frameNum; i++) {
 		MatrixXf posem, translm;
 		load_nptxt(posem, posePath[i]);
 		load_nptxt(translm, translPath[i]);
@@ -480,7 +482,7 @@ void BulletRender::RenderMotion(int robotKind, CamMat mat, vector<string> posePa
 	for (auto i = 0; i < frameNum; i++) bodyUids.push_back(sim->loadURDF(robotPath));
 	gui.active_shadow(true);
 	render_id floor_id = gui.add_floor(50, Vector3f(0, 0, 0), Vector3f(0, 1, 0),
-		Vector3f(120.0 / 255, 120.0 / 255, 120.0 / 255), Vector3f(0.99,0.99,0.99));
+		Vector3f(120.0 / 255, 120.0 / 255, 120.0 / 255), Vector3f(0.99, 0.99, 0.99));
 
 	BtRobotSimProxy phyproxy;
 	if (terrainMeshPath != "") {
@@ -488,7 +490,7 @@ void BulletRender::RenderMotion(int robotKind, CamMat mat, vector<string> posePa
 		load_nptxt(Boxes, terrainMeshPath);
 		phyproxy.addBoxTerrain(gui, Boxes);
 	}
-	for (auto i = 0; i < frameNum; i++){
+	for (auto i = 0; i < frameNum; i++) {
 		phyproxy.addBindingMultiBody(gui, sim, bodyUids[i]);
 		if (robotKind == Physcap)
 			PhyscapLoadMotion(bodyUids[i], poses[i], transl[i]);
@@ -514,7 +516,7 @@ void BulletRender::RenderMotion(int robotKind, CamMat mat, vector<string> posePa
 	vector<int>render_ids;
 	vector<MatrixXf> render_verts;
 	phyproxy.stepBindingUpdate(render_ids, render_verts, sim, bodyUids);
-	while (!gui.step_close_window()){
+	while (!gui.step_close_window()) {
 		if (gui.step_pause()) {
 			phyproxy.stepBindingUpdate(render_ids, render_verts, sim, bodyUids);
 		}
@@ -523,7 +525,7 @@ void BulletRender::RenderMotion(int robotKind, CamMat mat, vector<string> posePa
 	}
 	gui.step_terminate();
 }
-void BulletRender::RenderVideo(int robotKind, CamMat mat, const string& savePath, const vector<string>& posePaths, const vector<string>& translPaths, const string& urdfPath, const string terrainMeshPath){
+void BulletRender::RenderVideo(int robotKind, CamMat mat, const string& savePath, const vector<string>& posePaths, const vector<string>& translPaths, const string& urdfPath, const string terrainMeshPath) {
 	gui.active_shadow(true);
 	render_id floor_id = gui.add_floor(50, Vector3f(0, 0, 0), Vector3f(0, 1, 0),
 		Vector3f(120.0 / 255, 120.0 / 255, 120.0 / 255), Vector3f(0.99, 0.99, 0.99));
@@ -531,7 +533,7 @@ void BulletRender::RenderVideo(int robotKind, CamMat mat, const string& savePath
 	int frameNum = posePaths.size();
 	vector<VectorXf> poses;
 	vector<Vector3f> transl;
-	for (auto i = 0; i < frameNum; i++){
+	for (auto i = 0; i < frameNum; i++) {
 		MatrixXf posem, translm;
 		load_nptxt(posem, posePaths[i]);
 		load_nptxt(translm, translPaths[i]);
@@ -574,12 +576,12 @@ void BulletRender::RenderVideo(int robotKind, CamMat mat, const string& savePath
 	gui.step_refresh();
 
 	int idx = 0;
-	while (!gui.step_close_window()){
+	while (!gui.step_close_window()) {
 		if (gui.step_pause()) {
 			if (robotKind == Physcap) PhyscapLoadMotion(bodyUid, poses[idx], transl[idx]);
 			if (robotKind == Amass) AmassLoadMotion(bodyUid, poses[idx], transl[idx]);
 			if (robotKind == AmassDof) AmassDofLoadMotion(bodyUid, poses[idx], transl[idx]);
-			
+
 			phyproxy.stepBindingUpdate(render_ids, render_verts, sim, { bodyUid });
 
 			gui.step_updateVerts(render_ids, render_verts);
@@ -601,24 +603,15 @@ void BulletRender::RenderVideo(int robotKind, CamMat mat, const string& savePath
 	}
 	gui.step_terminate();
 }
-void BulletRender::RenderImgVideo(int robotKind, CamMat mat, const vector<string>& imgPaths, const string& savePath, const vector<string>& posePaths, const vector<string>& translPaths, const string& urdfPath){
+
+void BulletRender::RenderImgVideo(int robotKind, CamMat mat, const vector<string>& imgPaths, const string& savePath, const vector<string>& posePaths, const vector<string>& translPaths, const string& urdfPath) {
 	int num = posePaths.size();
 	int bodyUid = sim->loadURDF(urdfPath);
 
-	if (!mat.inmat.isZero()) {
-		if (mat.exmat.isZero()) {
-			mat.exmat.setIdentity();
-			AngleAxisf AA(mat.v.norm(), mat.v / mat.v.norm());
-			mat.exmat.block(0, 0, 3, 3) = AA.toRotationMatrix();
-			mat.exmat.block(0, 3, 3, 1) = mat.trans;
-		}
-		gui.step_launch(mat.windowSize, { mat.inmat }, { mat.exmat });
-	}
-	else {
-		gui.step_launch(mat.windowSize);
-	}
+	MatrixXf dif;
+	load_nptxt(dif, "H:\\YangYuan\\Code\\phy_program\\CodeBase\\dif.txt");
 
-	for (auto i = 0; i < num; i++){
+	for (auto i = 0; i < num; i++) {
 		BtRobotSimProxy phyproxy;
 		phyproxy.addBindingMultiBody(gui, sim, bodyUid);
 		MatrixXf posem, translm;
@@ -631,10 +624,16 @@ void BulletRender::RenderImgVideo(int robotKind, CamMat mat, const vector<string
 		if (robotKind == Amass) AmassLoadMotion(bodyUid, pose, transl);
 		if (robotKind == AmassDof) AmassDofLoadMotion(bodyUid, pose, transl);
 		Mat img = imread(imgPaths[i]);
+		mat.windowSize << img.cols, img.rows;
+
+		Matrix4f exmat = mat.exmat;
+		exmat(0, 3) -= dif(i, 0);
+		exmat(1, 3) -= dif(i, 1);
+		exmat(2, 3) -= dif(i, 2);
 
 		vector<Mat> background_img_list = { img };
 		gui.add_background({ imread(imgPaths[i]) });
-		gui.step_launch(Vector2i(img.cols, img.rows), { mat.inmat }, { mat.exmat });
+		gui.step_launch(Vector2i(img.cols, img.rows), { mat.inmat }, { exmat });
 		vector<int>render_ids;
 		vector<MatrixXf> render_verts;
 		phyproxy.stepBindingUpdate(render_ids, render_verts, sim, { bodyUid });
@@ -694,9 +693,9 @@ void BulletRender::RenderSmplVideo(CamMat mat, const string& savePath, const vec
 			gui.computeExtrinsicfromModelview(camera_Extrins);
 			printf("\n[GUI]Intrins (%d) : \n", int(camera_Intrins.size()));
 			cout << camera_Intrins[0] << endl;
-			
+
 			mat.inmat = camera_Intrins[0];
-			
+
 			printf("[GUI]Extrins (%d) : \n", int(camera_Extrins.size()));
 			Eigen::Matrix3f camera_mat = camera_Extrins[0].topLeftCorner(3, 3);
 			AngleAxisf rot = AngleAxisf(camera_mat);
@@ -711,7 +710,7 @@ void BulletRender::RenderSmplVideo(CamMat mat, const string& savePath, const vec
 		gui.step_refresh();
 	}
 
-	while (!gui.step_close_window()){
+	while (!gui.step_close_window()) {
 		if (gui.step_pause()) {
 			for (auto i = 0; i < frameNum; i++) {
 				BtRobotSimProxy phyproxy;
@@ -748,6 +747,45 @@ void BulletRender::RenderSmplVideo(CamMat mat, const string& savePath, const vec
 			return;
 		}
 		gui.step_refresh();
+	}
+}
+
+void BulletRender::RenderSmplImgVideo(CamMat mat, const vector<string>& imgPaths, const string& savePath, const vector<string>& smplPaths)
+{
+	int num = smplPaths.size();
+
+	MatrixXf dif;
+	load_nptxt(dif, "H:\\YangYuan\\Code\\phy_program\\CodeBase\\dif.txt");
+
+	for (auto i = 0; i < num; i++) {
+		MatrixXf vs, ts;
+		MatrixXi fs;
+		load_elementary_mesh(smplPaths[i], vs, fs, ts);
+		gui.add_mesh(vs, fs);
+		Mat img = imread(imgPaths[i]);
+		mat.windowSize << img.cols, img.rows;
+
+		Matrix4f exmat = mat.exmat;
+		//exmat(0, 3) -= dif(i, 0);
+		//exmat(1, 3) -= dif(i, 1);
+		//exmat(2, 3) -= dif(i, 2);
+
+		vector<Mat> background_img_list = { img };
+		gui.add_background({ imread(imgPaths[i]) });
+		gui.step_launch(Vector2i(img.cols, img.rows), { mat.inmat }, { exmat });
+		vector<int>render_ids;
+		vector<MatrixXf> render_verts;
+		gui.step_refresh();
+
+		WinPara* ptr = (WinPara*)glfwGetWindowUserPointer(gui.m_windows[0].ptrWindow);
+		Mat image(ptr->height, ptr->width, CV_8UC3);
+		glPixelStorei(GL_PACK_ALIGNMENT, 1);
+		glPixelStorei(GL_PACK_ROW_LENGTH, ptr->width);
+		glReadPixels(0, 0, ptr->width, ptr->height, GL_BGR, GL_UNSIGNED_BYTE, image.data);
+		flip(image, image, 0);
+		imwrite(savePath + zfill(to_string(i), 10) + ".png", image);
+
+		gui.step_terminate();
 	}
 }
 
@@ -788,15 +826,23 @@ int main()
 		BulletRender renderTest;
 		CamMat mat;
 		mat.windowSize << 960, 960;
-		string rootPath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\motionData\\";
-		string urdfPath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\urdf\\demo1Dof.urdf";
-		string savePath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\motionData\\huawei\\render\\demo1\\";
+		mat.inmat <<
+			1158.82, 0, 480,
+			0, 1158.82, 480,
+			0, 0, 1;
+		mat.v << -0.700215, -0.0170787, 0.713728;
+		mat.v *= 3.13796;
+		mat.trans << -0.174408, 0.799853, 4.81257;
+
+		string rootPath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\motionData\\output\\new_smooth\\data\\";
+		string urdfPath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\motionData\\output\\demo1Dof.urdf";
+		string savePath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\motionData\\output\\new_smooth\\render\\";
 
 		vector<string> posePaths, translPaths;
 
-		for (auto i = 1; i <= 288; i++){
-			posePaths.push_back(rootPath + "huawei\\poseData\\demo1\\" + zfill(to_string(i), 10) + "_pose.txt");
-			translPaths.push_back(rootPath + "huawei\\poseData\\demo1\\" + zfill(to_string(i), 10) + "_transl.txt");
+		for (auto i = 0; i <= 285; i++){
+			posePaths.push_back(rootPath + zfill(to_string(i), 6) + "_pose.txt");
+			translPaths.push_back(rootPath + zfill(to_string(i), 6) + "_transl.txt");
 		}
 
 		renderTest.RenderVideo(AmassDof, mat, savePath, posePaths, translPaths, urdfPath);
@@ -807,16 +853,37 @@ int main()
 		BulletRender renderTest;
 		CamMat mat;
 
-		string imgPath = "\\\\105.1.1.112\\Evaluations_CVPR2022\\Eval_GPA\\images\\0000\\Camera00";
-		string rootPath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\motionData\\physcap0000GPA";
-		string urdfPath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\urdf\\physcap.urdf";
-		string camPath = "\\\\105.1.1.112\\Evaluations_CVPR2022\\Eval_GPA\\camparams\\0000\\camparams.txt";
-		string savePath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\motionData\\renderImg\\test\\";
+		string imgPath = "\\\\105.1.1.112\\e\\Human-Data-Physics-v1.0\\kinematic-huawei\\images\\demo1\\Camera00";
+		string rootPath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\motionData\\output\\ref_offset_adj_spline_fitting_sample\\data";
+		string urdfPath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\motionData\\output\\demo1Dof.urdf";
+		string camPath = "\\\\105.1.1.112\e\Human-Data-Physics-v1.0\kinematic-huawei\camparams\demo1\\camparams.txt";
+		string savePath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\motionData\\output\\ref_offset_adj_spline_fitting_sample\\renderImg\\";
 		vector<Matrix3f> camIns;
 		vector<Matrix4f> camExs;
 		load_cam_params(camPath, camIns, camExs);
 
-		mat.inmat = camIns[0]; mat.exmat = camExs[0];
+		// mat.inmat = camIns[0]; mat.exmat = camExs[0];
+		mat.inmat <<
+			2000, 0, 184,
+			0, 2000, 320,
+			0, 0, 1;
+		mat.exmat <<
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1;
+
+		Matrix4f exoff = Matrix4f::Zero();
+		exoff <<
+			-0.65130947, -0.0044586, -0.75879911, 32.31011,
+			0.0044586, -0.99998796, 0.00204878, -1.8454262,
+			-0.75879911, -0.00204878, 0.65132151, -3.9115276,
+			0, 0, 0, 1;
+		mat.exmat <<
+			-0.65130947, 0.00445859, -0.75879911, 18.08404511,// - 16.80981565,
+			-0.00445859, -0.99998796, -0.00204879, -1.70936021,// + 1.34898949,
+			-0.75879911, 0.00204879, 0.65132151, 27.06832579,// - 7.72473258,
+			0, 0, 0, 1;
 
 		vector<string> imgPaths, pklPaths, posePaths, translPaths;
 		getFiles(imgPath, imgPaths);
@@ -824,16 +891,16 @@ int main()
 		{
 			imgpath = imgPath + "\\" + imgpath;
 		}
-		for (auto i = 0; i <= 375;i++)
+		for (auto i = 0; i <= 285;i++)
 		{
-			posePaths.push_back(rootPath + "\\" + zfill(to_string(i), 10) + "_pose.txt");
-			translPaths.push_back(rootPath + "\\" + zfill(to_string(i), 10) + "_transl.txt");
+			posePaths.push_back(rootPath + "\\" + zfill(to_string(i), 6) + "_pose.txt");
+			translPaths.push_back(rootPath + "\\" + zfill(to_string(i), 6) + "_transl.txt");
 		}
-		renderTest.RenderImgVideo(Physcap, mat, imgPaths, savePath, posePaths, translPaths, urdfPath);
+		renderTest.RenderImgVideo(AmassDof, mat, imgPaths, savePath, posePaths, translPaths, urdfPath);
 	}*/
 
 	// RenderSmplVideo Test
-	{
+	/* {
 		BulletRender renderTest;
 		CamMat mat;
 		//mat.inmat <<
@@ -866,6 +933,64 @@ int main()
 		}
 
 		renderTest.RenderSmplVideo(mat, savePath, smplPaths);
+
+	}*/
+
+	// RenderSmplVideo Test
+	{
+		BulletRender renderTest;
+		CamMat mat;
+
+		string imgPath = "\\\\105.1.1.112\\e\\Human-Data-Physics-v1.0\\kinematic-huawei\\images\\demo1\\Camera00";
+		string rootPath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\motionData\\output\\new_smooth\\smpl";
+		string camPath = "\\\\105.1.1.112\e\Human-Data-Physics-v1.0\kinematic-huawei\camparams\demo1\\camparams.txt";
+		string savePath = "H:\\YangYuan\\Code\\cpp_program\\seuvcl-codebase-master2\\data\\graphics\\physdata\\motionData\\output\\new_smooth\\renderSmpl\\";
+		vector<Matrix3f> camIns;
+		vector<Matrix4f> camExs;
+		load_cam_params(camPath, camIns, camExs);
+
+		// mat.inmat = camIns[0]; mat.exmat = camExs[0];
+		mat.inmat <<
+			2000, 0, 184,
+			0, 2000, 320,
+			0, 0, 1;
+		mat.exmat <<
+			-0.65130947, 0.00445859, -0.75879911, 18.08404511,// - 16.80981565,
+			-0.00445859, -0.99998796, -0.00204879, -1.70936021,// + 1.34898949,
+			-0.75879911, 0.00204879, 0.65132151, 27.06832579,// - 7.72473258,
+			0, 0, 0, 1;
+		mat.exmat <<
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1;
+		//mat.exmat <<
+		//	-0.65130947, 0.00445859, -0.75879911, 1.27502768,
+		//	-0.00445859, -0.99998796, -0.00204879, -0.20132872,
+		//	-0.75879911, 0.00204879, 0.65132151, 19.34436249,
+		//	0, 0, 0, 1;
+		//mat.exmat <<
+		//	0.86072595, 0.01294855, 0.50890389, 1.6296913,
+		//	-0.01294855, -0.99879615, 0.04731368, -0.32722951,
+		//	0.50890389, -0.04731368, -0.85952211, 24.40299535,
+		//	0, 0, 0, 1;
+		//mat.exmat <<
+		//	0.95575415, -0.03807697, 0.29169185, -0.77602318,
+		//	0.03807697, -0.96723183, -0.25102339, 1.84465294,
+		//	0.29169185,  0.25102339, -0.92298598, 2.65906859,
+		//	0, 0, 0, 1;
+
+		vector<string> imgPaths, pklPaths, smplPaths;
+		getFiles(imgPath, imgPaths);
+		for (auto& imgpath : imgPaths)
+		{
+			imgpath = imgPath + "\\" + imgpath;
+		}
+		for (auto i = 0; i <= 286; i++)
+		{
+			smplPaths.push_back(rootPath + "\\" + zfill(to_string(i), 6) + ".obj");
+		}
+		renderTest.RenderSmplImgVideo(mat, imgPaths, savePath, smplPaths);
 
 	}
 }

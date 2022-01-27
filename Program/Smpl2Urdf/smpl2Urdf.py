@@ -12,8 +12,8 @@ from utils.rotate_utils import *
 import pickle
 
 class Config(object):
-    urdfPath = r'./data/temdata/results/demo3.urdf'
-    transPath = r'./data/temdata/results/demo3.txt'
+    urdfPath = R'\\105.1.1.112\e\Human-Data-Physics-v1.0/demo3.urdf'
+    transPath = R'\\105.1.1.112\e\Human-Data-Physics-v1.0/demo3.txt'
     iner = 0.001
     ankle_size = [0.0875,0.06,0.185]
     lankle_offset = [0.01719,-0.06032,0.02617]
@@ -62,7 +62,7 @@ smplModel = SMPLModel()
 #     0.04367678, -0.00264158, -0.02082669,  0.01223242, -0.01340746
 # ]
 
-pklPath = R'H:\YangYuan\Code\phy_program\CodeBase\data\temdata\results\huaweiT\demo3\000000.pkl'
+pklPath = R'\\105.1.1.112\e\Human-Data-Physics-v1.0\3DOH-physics\00000.pkl'
 
 with open(pklPath, 'rb') as file:
     data = pickle.load(file)    
