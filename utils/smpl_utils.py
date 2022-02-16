@@ -1,22 +1,33 @@
 import numpy as np
-import pickle
+import pickle as pkl
 import torch
 from torch.nn import Module
 import os
+import os.path as osp
 import sys
 sys.path.append('./')
 from utils import obj_utils
 from utils.rotate_utils import *
+import smplx
+from smplx import build_layer
+from loguru import logger
+import open3d as o3d
+from tqdm import tqdm
+from transfer_model.config import parse_args,read_yaml
+from transfer_model.data import build_dataloader
+from transfer_model.transfer_model import run_fitting
+from transfer_model.utils import read_deformation_transfer, np_mesh_to_o3d
+from utils.obj_utils import MeshData,read_obj,write_obj
 
 class SMPLModel(Module):
-    def __init__(self, device=None, model_path='./data/smpl/SMPL_NEUTRAL.pkl',
+    def __init__(self, device=None, model_path='./data/smpl/SMPL_MALE.pkl',
                  dtype=torch.float32, simplify=False, batch_size=1):
         super(SMPLModel, self).__init__()
         self.dtype = dtype
         self.simplify = simplify
         self.batch_size = batch_size
         with open(model_path, 'rb') as f:
-            params = pickle.load(f, encoding='latin')
+            params = pkl.load(f, encoding='latin')
         self.J_regressor = torch.from_numpy(
             np.array(params['J_regressor'].todense())
         ).type(self.dtype)
@@ -279,6 +290,128 @@ class SMPLModel(Module):
             joints = torch.tensordot(result, self.J_regressor.transpose(0, 1), dims=([1], [0])).transpose(1, 2)
         return result, joints
 
+def smplxMain(config):
+    '''
+        config = {
+            'modelPath' : R'H:\YangYuan\Code\phy_program\CodeBase\data\models_smplx_v1_1\models',
+            'pklPath'   : R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\fittings\mosh\vicon_03301_01\results\s001_frame_00001__00.00.00.023\000.pkl',
+            'savePath'  : R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\fittings\mosh\vicon_03301_01\results\s001_frame_00001__00.00.00.023\000x.obj',
+            'gender'    : 'male',
+            'num_betas' : 10,
+            'num_pca_comps' : 12,
+            'ext'       : 'npz',
+        }
+    '''
+    with open(config['pklPath'], 'rb') as file:
+        data = pkl.load(file, encoding='iso-8859-1')
+        
+        if 'num_pca_comps' in data:
+            config['num_pca_comps'] = data['num_pca_comps']
+        if 'num_betas' in data:
+            config['num_betas'] = data['num_betas']
+        if 'gender' in data:
+            config['gender'] = data['gender']
+
+        model = smplx.create(config['modelPath'], 'smplx',
+                            gender=config['gender'], use_face_contour=False,
+                            num_betas=config['num_betas'],
+                            num_pca_comps=config['num_pca_comps'],
+                            ext=config['ext'])
+        if config['body_only']:
+            output = model(
+                betas = torch.tensor(data['beta'][None,:]),
+                global_orient = torch.tensor(data['global_orient']),
+                body_pose = torch.tensor(data['body_pose']),
+                left_hand_pose = torch.zeros((1,config['num_pca_comps'])),
+                right_hand_pose = torch.zeros((1,config['num_pca_comps'])),
+                transl = torch.tensor(data['transl']),
+                jaw_pose = torch.tensor(data['jaw_pose'])*0,
+                return_verts = True,
+            )
+        else:
+            output = model(
+                betas = torch.tensor(data['beta'][None,:]),
+                global_orient = torch.tensor(data['global_orient']),
+                body_pose = torch.tensor(data['body_pose']),
+                left_hand_pose = torch.tensor(data['left_hand_pose']),
+                right_hand_pose = torch.tensor(data['right_hand_pose']),
+                transl = torch.tensor(data['transl']),
+                jaw_pose = torch.tensor(data['jaw_pose']),
+                return_verts = True,
+            )
+        vertices = output.vertices.detach().cpu().numpy().squeeze()
+        joints = output.joints.detach().cpu().numpy().squeeze()
+
+        if ('savePath' in config) and (config['savePath'] != ''):
+            meshData = MeshData()
+            meshData.vert = vertices
+            meshData.face = model.faces + 1
+            write_obj(config['savePath'], meshData)
+            return vertices, joints, model.faces + 1
+        return vertices, joints, model.faces + 1
+
+def smplx2smpl(exp_cfg):
+    device = torch.device('cuda')
+    if not torch.cuda.is_available():
+        logger.error('CUDA is not available!')
+        sys.exit(3)
+
+    logger.remove()
+    logger.add(
+        lambda x: tqdm.write(x, end=''), level=exp_cfg.logger_level.upper(),
+        colorize=True)
+
+    ## 自定义
+    output_folder = osp.expanduser(osp.expandvars(exp_cfg.output_folder))
+    logger.info(f'Saving output to: {output_folder}')
+    os.makedirs(output_folder, exist_ok=True)
+
+    model_path = exp_cfg.body_model.folder
+    body_model = build_layer(model_path, **exp_cfg.body_model)
+    logger.info(body_model)
+    body_model = body_model.to(device=device)
+
+    deformation_transfer_path = exp_cfg.get('deformation_transfer_path', '')
+    def_matrix = read_deformation_transfer(
+        deformation_transfer_path, device=device)
+
+    # Read mask for valid vertex ids
+    mask_ids_fname = osp.expandvars(exp_cfg.mask_ids_fname)
+    mask_ids = None
+    if osp.exists(mask_ids_fname):
+        logger.info(f'Loading mask ids from: {mask_ids_fname}')
+        mask_ids = np.load(mask_ids_fname)
+        mask_ids = torch.from_numpy(mask_ids).to(device=device)
+    else:
+        logger.warning(f'Mask ids fname not found: {mask_ids_fname}')
+
+    data_obj_dict = build_dataloader(exp_cfg)
+
+    dataloader = data_obj_dict['dataloader']
+
+    for ii, batch in enumerate(tqdm(dataloader)):
+        for key in batch:
+            if torch.is_tensor(batch[key]):
+                batch[key] = batch[key].to(device=device)
+        var_dict = run_fitting(
+            exp_cfg, batch, body_model, def_matrix, mask_ids)
+        paths = batch['paths']
+
+        for ii, path in enumerate(paths):
+            _, fname = osp.split(path)
+
+            output_path = osp.join(
+                output_folder, fname.split('_')[0]+'_smpl.pkl')
+            with open(output_path, 'wb') as f:
+                pkl.dump(var_dict, f)
+
+            output_path = osp.join(
+                output_folder, fname.split('_')[0]+'_smpl.obj')
+            meshData = MeshData()
+            meshData.vert = var_dict['vertices'][ii].detach().cpu().numpy()
+            meshData.face = var_dict['faces']+1
+            write_obj(output_path, meshData)
+
 def addRot(pose, transl, betas, rot, T):
     '''
     pose   : 72
@@ -316,7 +449,7 @@ def rotExmat(rot, T, rotEx,TEx):
 
 def pkl2Smpl(path):
     with open(path, 'rb') as file:
-        data = pickle.load(file)
+        data = pkl.load(file)
     if 'person00' in data:
         pose = data['person00']['pose']
         transl = data['person00']['transl']

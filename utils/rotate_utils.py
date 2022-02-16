@@ -4,7 +4,9 @@ import math
 
 def Camera_project(points, externalMat=None, internalMat=None):
     '''
-    points: n
+    points: n * 3 np.array
+    return: ex_: n * 3
+            in_: n * 2
     '''
     if externalMat is None:
         return points

@@ -1,30 +1,3 @@
-# def read_obj(file_name):
-#     verts = []
-#     faces = []
-#     f = open(file_name)
-#     line = f.readline()
-#     while line:
-#         line_data = line.split()
-#         if line_data.__len__():
-#             if line_data[0] == 'v':
-#                 verts.append([float(line_data[1]),float(line_data[2]),float(line_data[3])])
-#             elif line_data[0] == 'f':
-#                 faces.append([float(line_data[1]),float(line_data[2]),float(line_data[3])])           
-#         line = f.readline()
-#     f.close()
-#     return verts, faces
-
-# def write_obj(file_name, meshData):
-#     f = open(file_name, 'w')
-#     for data in verts:
-#         f.write('v ' + str(data[0]) + ' ' + str(data[1]) + ' ' + str(data[2]) + '\n')
-#     if faces is None:
-#         f.close()
-#         return
-#     for face in faces:
-#         f.write('f ' + str(int(face[0])) + ' ' + str(int(face[1])) + ' ' + str(int(face[2])) + '\n')
-#     f.close()
-
 class MeshData(object):
     def __init__(self):
         self.vert = []
