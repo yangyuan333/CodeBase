@@ -300,6 +300,7 @@ def smplxMain(config):
             'num_betas' : 10,
             'num_pca_comps' : 12,
             'ext'       : 'npz',
+            'body_only' : False,
         }
     '''
     with open(config['pklPath'], 'rb') as file:
@@ -317,7 +318,7 @@ def smplxMain(config):
                             num_betas=config['num_betas'],
                             num_pca_comps=config['num_pca_comps'],
                             ext=config['ext'])
-        if config['body_only']:
+        if ('body_only' in config) and config['body_only']:
             output = model(
                 betas = torch.tensor(data['beta'][None,:]),
                 global_orient = torch.tensor(data['global_orient']),

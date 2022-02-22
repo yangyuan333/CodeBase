@@ -1,6 +1,13 @@
 from scipy.spatial.transform import Rotation as R
 import numpy as np
 import math
+import sys
+sys.path.append('./')
+from utils.obj_utils import read_obj, write_obj, MeshData
+from utils.smpl_utils import SMPLModel, smplxMain
+import torch
+import pickle as pkl
+import smplx
 
 def Camera_project(points, externalMat=None, internalMat=None):
     '''
@@ -128,7 +135,14 @@ def rotateScene(config):
     write_obj(config['savePath'], meshData)
 
 def rotatePlane(config):
-    Smpl = SMPLModel()
+    if 'gender' not in config:
+        Smpl = SMPLModel()
+    elif config['gender'].lower() == 'male':
+        Smpl = SMPLModel(model_path='./data/smpl/SMPL_MALE.pkl')
+    elif config['gender'].lower() == 'female':
+        Smpl = SMPLModel(model_path='./data/smpl/SMPL_FEMALE.pkl')
+    elif config['gender'].lower() == 'neutral':
+        Smpl = SMPLModel(model_path='./data/smpl/SMPL_NEUTRAL.pkl')
     vec = np.array([
         config['a'][0],
         -1.0,
@@ -138,25 +152,62 @@ def rotatePlane(config):
 
     r = CalRotFromVecs(vec, vn)
 
-    for frameName, temPath in zip(config['pklPaths'], config['temRotPaths']):
-        with open(frameName,'rb') as file:
-            data = pkl.load(file)
-        pose = data['person00']['pose'].copy()
-        betas = data['person00']['betas']
-        transl = data['person00']['transl']
-        pose[:3] *= 0
-        _, js = Smpl(
-            torch.tensor(betas.astype(np.float32)),
-            torch.tensor(pose[None,:].astype(np.float32)),
-            torch.tensor(np.array([[0,0,0]]).astype(np.float32)),
-            torch.tensor([[1.0]])
-        )
-        j0 = js[0][0].numpy()
-        data['person00']['pose'][:3] = (r*R.from_rotvec(data['person00']['pose'][:3])).as_rotvec()
-        data['person00']['global_orient'] = data['person00']['pose'][:3]
-        data['person00']['transl'] = r.apply(j0 + transl) - j0
-        with open(temPath,'wb') as file:
-            pkl.dump(data, file)
+    if ('model' in config) and (config['model'].lower() == 'smpl'):
+        for frameName, temPath in zip(config['pklPaths'], config['temRotPaths']):
+            with open(frameName,'rb') as file:
+                data = pkl.load(file)
+            pose = data['person00']['pose'].copy()
+            betas = data['person00']['betas']
+            transl = data['person00']['transl']
+            pose[:3] *= 0
+            _, js = Smpl(
+                torch.tensor(betas.astype(np.float32)),
+                torch.tensor(pose[None,:].astype(np.float32)),
+                torch.tensor(np.array([[0,0,0]]).astype(np.float32)),
+                torch.tensor([[1.0]])
+            )
+            j0 = js[0][0].numpy()
+            data['person00']['pose'][:3] = (r*R.from_rotvec(data['person00']['pose'][:3])).as_rotvec()
+            data['person00']['global_orient'] = data['person00']['pose'][:3]
+            data['person00']['transl'] = r.apply(j0 + transl) - j0
+            with open(temPath,'wb') as file:
+                pkl.dump(data, file)
+    elif ('model' in config) and (config['model'].lower() == 'smplx'):
+        R'H:\YangYuan\Code\phy_program\CodeBase\data\models_smplx_v1_1\models',
+        model = smplx.create(R'./data/models_smplx_v1_1/models', 'smplx',
+                            gender=config['gender'], use_face_contour=False,
+                            num_betas=config['num_betas'],
+                            num_pca_comps=config['num_pca_comps'],
+                            ext=config['ext'])
+        for frameName, temPath in zip(config['pklPaths'], config['temRotPaths']):
+            with open(frameName,'rb') as file:
+                data = pkl.load(file)
+            output = model(
+                betas = torch.tensor(data['beta'][None,:]),
+                global_orient = torch.tensor(data['global_orient']),
+                body_pose = torch.tensor(data['body_pose']),
+                left_hand_pose = torch.tensor(data['left_hand_pose']),
+                right_hand_pose = torch.tensor(data['right_hand_pose']),
+                transl = torch.tensor(data['transl']),
+                jaw_pose = torch.tensor(data['jaw_pose']),
+                return_verts = True,
+            )
+            pose = data['person00']['pose'].copy()
+            betas = data['person00']['betas']
+            transl = data['person00']['transl']
+            pose[:3] *= 0
+            _, js = Smpl(
+                torch.tensor(betas.astype(np.float32)),
+                torch.tensor(pose[None,:].astype(np.float32)),
+                torch.tensor(np.array([[0,0,0]]).astype(np.float32)),
+                torch.tensor([[1.0]])
+            )
+            j0 = js[0][0].numpy()
+            data['person00']['pose'][:3] = (r*R.from_rotvec(data['person00']['pose'][:3])).as_rotvec()
+            data['person00']['global_orient'] = data['person00']['pose'][:3]
+            data['person00']['transl'] = r.apply(j0 + transl) - j0
+            with open(temPath,'wb') as file:
+                pkl.dump(data, file)  
         
     return r.as_matrix()
 

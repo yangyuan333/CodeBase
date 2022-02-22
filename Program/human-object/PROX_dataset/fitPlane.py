@@ -211,15 +211,15 @@ if __name__ == '__main__':
     # print(Rote)
     # print(Te)
 
-    Cam = np.loadtxt(R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\cam.txt')
+    # Cam = np.loadtxt(R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\cam.txt')
     # meshData = read_obj(R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\fittings\mosh\vicon_03301_01\results\s001_frame_00001__00.00.00.023\smpl\000_smpl_final.obj')
     # meshData.vert = Camera_project(np.array(meshData.vert),Cam)
     # write_obj(R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\fittings\mosh\vicon_03301_01\results\s001_frame_00001__00.00.00.023\smpl\000_smpl_cam.obj',meshData)
 
-    for seqDir in glob.glob(os.path.join(R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\fittings\mosh','*')):
-        for frameDir in glob.glob(os.path.join(seqDir,'results','*')):
-            with open(os.path.join(frameDir,'smpl','000_smpl_final.pkl'), 'rb') as file:
-                data = pkl.load(file)
-            data['person00']['cam_extrinsic'] = Cam
-            with open(os.path.join(frameDir,'smpl','000_smpl_final_cam.pkl'), 'wb') as file:
-                pkl.dump(data,file)
+    # for seqDir in glob.glob(os.path.join(R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\fittings\mosh','*')):
+    #     for frameDir in glob.glob(os.path.join(seqDir,'results','*')):
+    #         with open(os.path.join(frameDir,'smpl','000_smpl_final.pkl'), 'rb') as file:
+    #             data = pkl.load(file)
+    #         data['person00']['cam_extrinsic'] = Cam
+    #         with open(os.path.join(frameDir,'smpl','000_smpl_final_cam.pkl'), 'wb') as file:
+    #             pkl.dump(data,file)
