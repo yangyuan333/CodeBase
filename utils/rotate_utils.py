@@ -6,7 +6,7 @@ import pickle as pkl
 import os
 import sys
 sys.path.append('./')
-from utils.smpl_utils_YY import creatModel
+from utils.smpl_utils import creatModel
 from utils.obj_utils import read_obj, write_obj,MeshData
 
 def Camera_project(points, externalMat=None, internalMat=None):
