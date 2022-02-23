@@ -5,8 +5,8 @@ import numpy as np
 import json
 import sys
 sys.path.append('./')
-from utils.rotate_utils_YY import fitPlane, rotatePlane, transPlane, Camera_project
-from utils.smpl_utils_YY import applyRot2Smpl, pkl2smpl
+from utils.rotate_utils import fitPlane, rotatePlane, transPlane, Camera_project
+from utils.smpl_utils import applyRot2Smpl, pkl2smpl
 from utils.obj_utils import MeshData, write_obj
 
 def Unitest_FitPlaneSmpl():
