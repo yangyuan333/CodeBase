@@ -1,26 +1,16 @@
-import numpy as np
+import smplx
 import pickle as pkl
 import torch
 from torch.nn import Module
+import numpy as np
 import os
-import os.path as osp
 import sys
 sys.path.append('./')
-from utils import obj_utils
-from utils.rotate_utils import *
-import smplx
-from smplx import build_layer
-from loguru import logger
-import open3d as o3d
-from tqdm import tqdm
-from transfer_model.config import parse_args,read_yaml
-from transfer_model.data import build_dataloader
-from transfer_model.transfer_model import run_fitting
-from transfer_model.utils import read_deformation_transfer, np_mesh_to_o3d
-from utils.obj_utils import MeshData,read_obj,write_obj
+from utils.obj_utils import MeshData, write_obj
+from scipy.spatial.transform import Rotation as R
 
 class SMPLModel(Module):
-    def __init__(self, device=None, model_path='./data/smpl/SMPL_MALE.pkl',
+    def __init__(self, device=None, model_path='./data/smplData/smpl/SMPL_MALE.pkl',
                  dtype=torch.float32, simplify=False, batch_size=1):
         super(SMPLModel, self).__init__()
         self.dtype = dtype
@@ -33,7 +23,7 @@ class SMPLModel(Module):
         ).type(self.dtype)
         # 20190330: lsp 14 joint regressor
         self.joint_regressor = torch.from_numpy(
-            np.load('./data/smpl/J_regressor_lsp.npy')).type(self.dtype)
+            np.load('./data/smplData/smpl/J_regressor_lsp.npy')).type(self.dtype)
 
         self.weights = torch.from_numpy(params['weights']).type(self.dtype)
         self.posedirs = torch.from_numpy(params['posedirs']).type(self.dtype)
@@ -85,7 +75,6 @@ class SMPLModel(Module):
                 param[:] = torch.tensor(params_dict[param_name])
             else:
                 param.fill_(0)
-
 
     @staticmethod
     def rodrigues(r):
@@ -290,68 +279,60 @@ class SMPLModel(Module):
             joints = torch.tensordot(result, self.J_regressor.transpose(0, 1), dims=([1], [0])).transpose(1, 2)
         return result, joints
 
-def smplxMain(config):
-    '''
-        config = {
-            'modelPath' : R'H:\YangYuan\Code\phy_program\CodeBase\data\models_smplx_v1_1\models',
-            'pklPath'   : R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\fittings\mosh\vicon_03301_01\results\s001_frame_00001__00.00.00.023\000.pkl',
-            'savePath'  : R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\fittings\mosh\vicon_03301_01\results\s001_frame_00001__00.00.00.023\000x.obj',
-            'gender'    : 'male',
-            'num_betas' : 10,
-            'num_pca_comps' : 12,
-            'ext'       : 'npz',
-            'body_only' : False,
-        }
-    '''
-    with open(config['pklPath'], 'rb') as file:
+def pkl2smpl(pklPath, mode='smpl', modelPath='./data/smplData/body_models', gender='male', ext='pkl', **config):
+    with open(pklPath, 'rb') as file:
         data = pkl.load(file, encoding='iso-8859-1')
-        
-        if 'num_pca_comps' in data:
-            config['num_pca_comps'] = data['num_pca_comps']
-        if 'num_betas' in data:
-            config['num_betas'] = data['num_betas']
-        if 'gender' in data:
-            config['gender'] = data['gender']
 
-        model = smplx.create(config['modelPath'], 'smplx',
-                            gender=config['gender'], use_face_contour=False,
-                            num_betas=config['num_betas'],
-                            num_pca_comps=config['num_pca_comps'],
-                            ext=config['ext'])
-        if ('body_only' in config) and config['body_only']:
+        if mode.lower() == 'smpl':
+            model = smplx.create(modelPath,mode,gender=gender)
             output = model(
-                betas = torch.tensor(data['beta'][None,:]),
-                global_orient = torch.tensor(data['global_orient']),
-                body_pose = torch.tensor(data['body_pose']),
-                left_hand_pose = torch.zeros((1,config['num_pca_comps'])),
-                right_hand_pose = torch.zeros((1,config['num_pca_comps'])),
-                transl = torch.tensor(data['transl']),
-                jaw_pose = torch.tensor(data['jaw_pose'])*0,
-                return_verts = True,
-            )
-        else:
+                betas = torch.tensor(data['person00']['betas'].astype(np.float32)),
+                body_pose = torch.tensor(data['person00']['body_pose'][None,:].astype(np.float32)),
+                global_orient = torch.tensor(data['person00']['global_orient'][None,:].astype(np.float32)),
+                transl = torch.tensor(data['person00']['transl'][None,:].astype(np.float32)))
+        elif mode.lower() == 'smplx':
+            model = smplx.create(modelPath, mode,
+                                gender=gender, use_face_contour=False,
+                                num_betas=data['person00']['betas'].shape[1],
+                                num_pca_comps=data['person00']['left_hand_pose'].shape[0],
+                                ext=ext)
             output = model(
-                betas = torch.tensor(data['beta'][None,:]),
-                global_orient = torch.tensor(data['global_orient']),
-                body_pose = torch.tensor(data['body_pose']),
-                left_hand_pose = torch.tensor(data['left_hand_pose']),
-                right_hand_pose = torch.tensor(data['right_hand_pose']),
-                transl = torch.tensor(data['transl']),
-                jaw_pose = torch.tensor(data['jaw_pose']),
-                return_verts = True,
-            )
-        vertices = output.vertices.detach().cpu().numpy().squeeze()
-        joints = output.joints.detach().cpu().numpy().squeeze()
+                    betas = torch.tensor(data['person00']['betas'].astype(np.float32)),
+                    global_orient = torch.tensor(data['person00']['global_orient'][None,:].astype(np.float32)),
+                    body_pose = torch.tensor(data['person00']['body_pose'][None,:].astype(np.float32)),
+                    left_hand_pose = torch.tensor(data['person00']['left_hand_pose'][None,:].astype(np.float32)),
+                    right_hand_pose = torch.tensor(data['person00']['right_hand_pose'][None,:].astype(np.float32)),
+                    transl = torch.tensor(data['person00']['transl'][None,:].astype(np.float32)),
+                    jaw_pose = torch.tensor(data['person00']['jaw_pose'][None,:].astype(np.float32)))
+    
+    if 'savePath' in config:
+        meshData = MeshData()
+        meshData.vert = output.vertices.detach().cpu().numpy().squeeze()
+        meshData.face = model.faces + 1
+        write_obj(config['savePath'], meshData)
+    return output.vertices.detach().cpu().numpy().squeeze(),output.joints.detach().cpu().numpy().squeeze(),model.faces + 1
 
-        if ('savePath' in config) and (config['savePath'] != ''):
-            meshData = MeshData()
-            meshData.vert = vertices
-            meshData.face = model.faces + 1
-            write_obj(config['savePath'], meshData)
-            return vertices, joints, model.faces + 1
-        return vertices, joints, model.faces + 1
+def creatModel(mode='smpl', modelPath='./data/smplData/body_models', gender='male', ext='pkl', **config):
+    if mode.lower() == 'smpl':
+        return smplx.create(smplx.create(modelPath,mode,gender=gender))
+    elif mode.lower() == 'smplx':
+        return smplx.create(modelPath, mode,
+                            gender=gender, use_face_contour=False,
+                            num_betas=config['num_betas'] if 'num_betas' in config else 10,
+                            num_pca_comps=config['num_pca_comps'] if 'num_pca_comps' in config else 12,
+                            ext=ext)
 
-def smplx2smpl(exp_cfg):
+def smplx2smpl(smplxMeshPath,smplPklSavePath,cfg_path=R'./data/smplData/smplx2smpl.yaml'):
+    from transfer_model.data import build_dataloader
+    from transfer_model.transfer_model import run_fitting
+    from transfer_model.utils import read_deformation_transfer
+    from transfer_model.config import read_yaml
+    from smplx import build_layer
+    from loguru import logger
+    import tqdm
+    exp_cfg = read_yaml(cfg_path)
+    exp_cfg.datasets.mesh_folder.data_folder = smplxMeshPath
+    exp_cfg.output_folder = smplPklSavePath
     device = torch.device('cuda')
     if not torch.cuda.is_available():
         logger.error('CUDA is not available!')
@@ -363,7 +344,7 @@ def smplx2smpl(exp_cfg):
         colorize=True)
 
     ## 自定义
-    output_folder = osp.expanduser(osp.expandvars(exp_cfg.output_folder))
+    output_folder = os.path.expanduser(os.path.expandvars(exp_cfg.output_folder))
     logger.info(f'Saving output to: {output_folder}')
     os.makedirs(output_folder, exist_ok=True)
 
@@ -377,9 +358,9 @@ def smplx2smpl(exp_cfg):
         deformation_transfer_path, device=device)
 
     # Read mask for valid vertex ids
-    mask_ids_fname = osp.expandvars(exp_cfg.mask_ids_fname)
+    mask_ids_fname = os.path.expandvars(exp_cfg.mask_ids_fname)
     mask_ids = None
-    if osp.exists(mask_ids_fname):
+    if os.path.exists(mask_ids_fname):
         logger.info(f'Loading mask ids from: {mask_ids_fname}')
         mask_ids = np.load(mask_ids_fname)
         mask_ids = torch.from_numpy(mask_ids).to(device=device)
@@ -399,86 +380,70 @@ def smplx2smpl(exp_cfg):
         paths = batch['paths']
 
         for ii, path in enumerate(paths):
-            _, fname = osp.split(path)
+            _, fname = os.path.split(path)
 
-            output_path = osp.join(
+            output_path = os.path.join(
                 output_folder, fname.split('_')[0]+'_smpl.pkl')
             with open(output_path, 'wb') as f:
                 pkl.dump(var_dict, f)
 
-            output_path = osp.join(
+            output_path = os.path.join(
                 output_folder, fname.split('_')[0]+'_smpl.obj')
             meshData = MeshData()
             meshData.vert = var_dict['vertices'][ii].detach().cpu().numpy()
             meshData.face = var_dict['faces']+1
             write_obj(output_path, meshData)
 
-def addRot(pose, transl, betas, rot, T):
-    '''
-    pose   : 72
-    transl : 3
-    betas  : 10
-    rot    : 3*3
-    T      : 3
-    '''
-    r = R.from_matrix(rot)
-    smplModel = SMPLModel()
-    poseTem = pose.copy()
-    translTem = transl.copy()
-    poseTem[:3] *= 0
-    _,js = smplModel(
-        torch.tensor(betas.astype(np.float32)),
-        torch.tensor(poseTem[None,:].astype(np.float32)),
-        torch.tensor(np.array([[0,0,0]]).astype(np.float32)),
-        torch.tensor([[1.0]])
-    )
-    j0 = js[0][0].numpy()
-    poseTem[:3] = (r*R.from_rotvec(pose[:3])).as_rotvec()
-    translTem = r.apply(j0 + transl) + T - j0
-    return poseTem, translTem, betas
+def applyRot2Smpl(pklPath,savePath,Rotm=np.eye(3,3),Tm=np.zeros(3),mode='smpl',gender='male'):
+    if mode.lower() == 'smpl':
+        model = creatModel(gender=gender)
+        with open(pklPath,'rb') as file:
+            data = pkl.load(file)
+        output = model(
+            betas = torch.tensor(data['person00']['betas'].astype(np.float32)),
+            body_pose = torch.tensor(data['person00']['body_pose'][None,:].astype(np.float32)),
+            global_orient = torch.tensor(np.array([[0.0,0.0,0.0]]).astype(np.float32)),
+            transl = torch.tensor(np.array([[0.0,0.0,0.0]]).astype(np.float32)))
+        js = output.joints.detach().cpu().numpy().squeeze()
+        j0 = js[0]
+        data['person00']['pose'][:3] = (R.from_matrix(Rotm)*R.from_rotvec(data['person00']['pose'][:3])).as_rotvec()
+        data['person00']['global_orient'] = data['person00']['pose'][:3]
+        data['person00']['transl'] = R.from_matrix(Rotm).apply(j0 + data['person00']['transl']) - j0 + Tm
+        # data['person00']['transl'] = R.from_matrix(Rotm).apply(data['person00']['transl']) + Tm
+        with open(savePath,'wb') as file:
+            pkl.dump(data, file)
+    elif mode.lower() == 'smplx':
+        with open(pklPath,'rb') as file:
+            data = pkl.load(file)
+        model = creatModel(
+            mode,
+            gender=gender,
+            num_betas=data['person00']['betas'].shape[1],
+            num_pca_comps=data['person00']['left_hand_pose'].shape[0])
 
-def rotExmat(rot, T, rotEx,TEx):
+        output = model(
+                betas = torch.tensor(data['person00']['betas'].astype(np.float32)),
+                global_orient = torch.tensor(np.array([[0.0,0.0,0.0]]).astype(np.float32)),
+                body_pose = torch.tensor(data['person00']['body_pose'][None,:].astype(np.float32)),
+                left_hand_pose = torch.tensor(data['person00']['left_hand_pose'][None,:].astype(np.float32)),
+                right_hand_pose = torch.tensor(data['person00']['right_hand_pose'][None,:].astype(np.float32)),
+                transl = torch.tensor(np.array([[0.0,0.0,0.0]]).astype(np.float32)),
+                jaw_pose = torch.tensor(data['person00']['jaw_pose'][None,:].astype(np.float32)))
+        js = output.joints.detach().cpu().numpy().squeeze()
+        j0 = js[0]
+        data['person00']['global_orient'] = (R.from_matrix(Rotm)*R.from_rotvec(data['person00']['global_orient'])).as_rotvec()
+        data['person00']['transl'] = R.from_matrix(Rotm).apply(j0 + data['person00']['transl']) - j0 + Tm
+        # data['person00']['transl'] = R.from_matrix(Rotm).apply(data['person00']['transl']) + Tm
+        with open(savePath,'wb') as file:
+            pkl.dump(data, file)
+
+def applyRot2Exmat(rotEx,TEx,Rotm=np.eye(3,3),Tm=np.zeros(3)):
     '''
     rot   : 3*3
-    T     : 3*1
+    T     : 3
     rotEx : 3*3
-    TEx   : 3*1
+    TEx   : 3
     '''
-    rotExTem = np.dot(rotEx,np.linalg.inv(rot))
-    TExTem = TEx - np.dot(rotExTem,T)
+    rotExTem = np.dot(rotEx,np.linalg.inv(Rotm))
+    TExTem = TEx - np.dot(rotExTem,Tm[:,None])[:,0]
     return rotExTem, TExTem
-
-def pkl2Smpl(path):
-    with open(path, 'rb') as file:
-        data = pkl.load(file)
-    if 'person00' in data:
-        pose = data['person00']['pose']
-        transl = data['person00']['transl']
-        beta = data['person00']['betas']
-    else:
-        pose = data['pose']
-        transl = data['transl']
-        beta = data['betas']
-    if pose.ndim == 1:
-        pose = pose[None,:].astype(np.float32)
-    else:
-        pose = pose.astype(np.float32)
-    if transl.ndim == 1:
-        transl = transl[None,:].astype(np.float32)
-    else:
-        transl = transl.astype(np.float32) 
-    if beta.ndim == 1:
-        beta = beta[None,:].astype(np.float32)
-    else:
-        beta = beta.astype(np.float32)
-    smplModel = SMPLModel()
-    vs, js = smplModel(
-        torch.tensor(beta),
-        torch.tensor(pose),
-        torch.tensor(transl),
-        torch.tensor([[1.0]])
-    )
-    return vs[0].numpy(), js[0].numpy()
-
-if __name__ == '__main__':
-    pass
