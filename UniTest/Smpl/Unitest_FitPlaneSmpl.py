@@ -7,7 +7,7 @@ import sys
 sys.path.append('./')
 from utils.rotate_utils import fitPlane, rotatePlane, transPlane, Camera_project
 from utils.smpl_utils import applyRot2Smpl, pkl2smpl
-from utils.obj_utils import MeshData, write_obj
+from utils.obj_utils import MeshData, read_obj, write_obj
 
 def Unitest_FitPlaneSmpl():
     a = fitPlane(
@@ -17,7 +17,7 @@ def Unitest_FitPlaneSmpl():
     )
     pklPaths = []
     savePaths = []
-    for seqDir in glob.glob(os.path.join(R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\fittings\mosh','*')):
+    for seqDir in glob.glob(os.path.join(R'H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\fittings\mosh','*')):
         for frameDir in glob.glob(os.path.join(seqDir,'results','*')):
             pklPaths.append(os.path.join(frameDir,'000_scene.pkl'))
             savePaths.append(os.path.join(frameDir, 'smplx', '000_rot.pkl'))
@@ -30,10 +30,47 @@ def Unitest_FitPlaneSmpl():
     )
     pklPaths = []
     savePaths = []
-    for seqDir in glob.glob(os.path.join(R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\fittings\mosh','*')):
+    for seqDir in glob.glob(os.path.join(R'H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\fittings\mosh','*')):
         for frameDir in glob.glob(os.path.join(seqDir,'results','*')):
             pklPaths.append(os.path.join(frameDir, 'smplx', '000_rot.pkl'))
             savePaths.append(os.path.join(frameDir, 'smplx', '000_final.pkl'))
+    Tm = transPlane(
+        temRotPaths=pklPaths,
+        savePaths=savePaths,
+        mode='smplx',
+    )
+    print(Rotm)
+    print(Tm)
+
+def Unitest_FitPlaneSmpl_Frame():
+    a = fitPlane(
+        vertsPath=R'vs.txt',
+        flag='y',
+        savePath=R'plane.obj'
+    )
+    pklPaths = []
+    savePaths = []
+    # for seqDir in glob.glob(os.path.join(R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\fittings\mosh','*')):
+    #     for frameDir in glob.glob(os.path.join(seqDir,'results','*')):
+    #         pklPaths.append(os.path.join(frameDir,'000_scene.pkl'))
+    #         savePaths.append(os.path.join(frameDir, 'smplx', '000_rot.pkl'))
+    pklPaths.append(R'H:\YangYuan\ProjectData\contact_duiqi.pkl')
+    savePaths.append(R'H:\YangYuan\ProjectData\contact_rot.pkl')
+    Rotm = rotatePlane(
+        a,
+        pklPaths=pklPaths,
+        temRotPaths=savePaths,
+        mode='smplx',
+        flag='y',
+    )
+    pklPaths = []
+    savePaths = []
+    # for seqDir in glob.glob(os.path.join(R'H:\YangYuan\项目资料\人物交互\dataset\PROX\prox_quantiative_dataset\fittings\mosh','*')):
+    #     for frameDir in glob.glob(os.path.join(seqDir,'results','*')):
+    #         pklPaths.append(os.path.join(frameDir, 'smplx', '000_rot.pkl'))
+    #         savePaths.append(os.path.join(frameDir, 'smplx', '000_final.pkl'))
+    pklPaths.append(R'H:\YangYuan\ProjectData\contact_rot.pkl')
+    savePaths.append(R'H:\YangYuan\ProjectData\contact_final.pkl')
     Tm = transPlane(
         temRotPaths=pklPaths,
         savePaths=savePaths,
@@ -129,7 +166,126 @@ def TestResult():
             )
 
 if __name__ == '__main__':
+
+    with open(R'H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\cam2world\vicon.json', 'rb') as file:
+        cam = json.load(file)
+    cam1 = np.array([
+        [0.99947102, 0.02250866, 0.02347415, 1.340276],
+        [-0.02250866, -0.04222833, 0.99885441, -0.00790659],
+        [0.02347415, -0.99885441, -0.04169936, -0.84238],
+        [0,0,0,1]
+    ])
+    cam = np.dot(cam1,cam)
+    applyRot2Smpl(
+        R'H:\YangYuan\ProjectData\RGB_n.pkl',
+        R'H:\YangYuan\ProjectData\RGB_1.pkl',
+        cam[:3,:3],
+        cam[:3,3],
+        'smplx',
+        'male'
+    )
+    pkl2smpl(
+        R'H:\YangYuan\ProjectData\RGB_1.pkl',
+        'smplx',
+        gender='male',
+        savePath=R'H:\YangYuan\ProjectData\test.obj'
+    )
+    print(1)
+
+
+    # Unitest_FitPlaneSmpl()
+
+    # pkl2smpl(
+    #     R'H:\YangYuan\ProjectData\contact_1.pkl',
+    #     'smplx',
+    #     gender='male',
+    #     savePath=R'H:\YangYuan\ProjectData\test.obj'
+    # )
+
+    # cam = np.array([
+    #     [0.99947102, 0.02250866, 0.02347415, 1.340276],
+    #     [-0.02250866, -0.04222833, 0.99885441, -0.00790659],
+    #     [0.02347415, -0.99885441, -0.04169936, -0.84238],
+    #     [0,0,0,1]
+    # ])
+
+    # applyRot2Smpl(
+    #     R'H:\YangYuan\ProjectData\contact_duiqi.pkl',
+    #     R'H:\YangYuan\ProjectData\contact_1.pkl',
+    #     cam[:3,:3],
+    #     cam[:3,3],
+    #     'smplx',
+    #     'male'
+    # )
+    # print(1)
+
+    ## 场景对齐
+    # with open(R'H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\cam2world\vicon.json', 'rb') as file:
+    #     cam = json.load(file)
+    # applyRot2Smpl(
+    #     R'H:\YangYuan\ProjectData\contact_n.pkl',
+    #     R'H:\YangYuan\ProjectData\contact_duiqi.pkl',
+    #     np.array(cam)[:3,:3],
+    #     np.array(cam)[:3,3],
+    #     'smplx',
+    #     'male'
+    # )
+
+    # pkl2smpl(
+    #     R'H:\YangYuan\ProjectData\contact_duiqi.pkl',
+    #     'smplx',
+    #     gender='male',
+    #     ext='npz',
+    #     savePath=R'H:\YangYuan\ProjectData\test.obj'
+    # )
+    # vs,js,fs = pkl2smpl(
+    #     R'H:\YangYuan\ProjectData\contact_final.pkl',
+    #     'smplx',
+    #     gender='male',
+    #     ext='npz'
+    # )
+    # with open(R'H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\cam2world\vicon.json', 'rb') as file:
+    #     cam = json.load(file)
+    # vs = Camera_project(vs,cam)
+    # meshData = read_obj(R'H:\YangYuan\ProjectData\000_w.obj')
+    # meshData.vert = vs
+    # write_obj(R'H:\YangYuan\ProjectData\test.obj',meshData)
+
+
+    # import pickle as pkl
+    # with open(R'H:\YangYuan\ProjectData\RGB.pkl', 'rb') as file:
+    #     data = pkl.load(file)
+    # temdata = {}
+    # temdata['person00'] = {}
+    # temdata['person00']['betas'] = data['betas']
+    # temdata['person00']['body_pose'] = data['body_pose'][0]
+    # temdata['person00']['jaw_pose'] = data['jaw_pose'][0]
+    # temdata['person00']['right_hand_pose'] = data['right_hand_pose'][0]
+    # temdata['person00']['left_hand_pose'] = data['left_hand_pose'][0]
+    # temdata['person00']['global_orient'] = data['global_orient'][0]
+    # temdata['person00']['transl'] = data['transl'][0]
+    # temdata['person00']['num_pca_comps'] = 12
+    # temdata['person00']['cam_intrinsic'] = []
+    # temdata['person00']['cam_extrinsic'] = []
+    # temdata['person00']['reye_pose'] = data['reye_pose'][0]
+    # temdata['person00']['leye_pose'] = data['leye_pose'][0]
+    # temdata['person00']['expression'] = data['expression'][0]
+    # with open(R'H:\YangYuan\ProjectData\RGB_n.pkl', 'wb') as file:
+    #     pkl.dump(temdata, file)
+    # print(1)
+
+
+
+    # pkl2smpl(
+    #     R'H:\YangYuan\ProjectData\contact_final.pkl',
+    #     'smplx',
+    #     gender='male',
+    #     savePath=R'H:\YangYuan\ProjectData\contact_final.obj'
+    # )
+
+    # Unitest_FitPlaneSmpl_Frame()
+
     # Unitest_SmplxRot()
     # update_smplx_pkl()
     # Unitest_FitPlaneSmpl()
-    TestResult()
+    # TestResult()

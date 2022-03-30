@@ -332,7 +332,7 @@ def smplx2smpl(smplxMeshPath,smplPklSavePath,cfg_path=R'./data/smplData/smplx2sm
     import tqdm
     exp_cfg = read_yaml(cfg_path)
     exp_cfg.datasets.mesh_folder.data_folder = smplxMeshPath
-    exp_cfg.output_folder = smplPklSavePath
+    exp_cfg.output_folder = os.path.dirname(smplPklSavePath)
     device = torch.device('cuda')
     if not torch.cuda.is_available():
         logger.error('CUDA is not available!')
@@ -345,12 +345,12 @@ def smplx2smpl(smplxMeshPath,smplPklSavePath,cfg_path=R'./data/smplData/smplx2sm
 
     ## 自定义
     output_folder = os.path.expanduser(os.path.expandvars(exp_cfg.output_folder))
-    logger.info(f'Saving output to: {output_folder}')
+    # logger.info(f'Saving output to: {output_folder}')
     os.makedirs(output_folder, exist_ok=True)
 
     model_path = exp_cfg.body_model.folder
     body_model = build_layer(model_path, **exp_cfg.body_model)
-    logger.info(body_model)
+    # logger.info(body_model)
     body_model = body_model.to(device=device)
 
     deformation_transfer_path = exp_cfg.get('deformation_transfer_path', '')
@@ -361,7 +361,7 @@ def smplx2smpl(smplxMeshPath,smplPklSavePath,cfg_path=R'./data/smplData/smplx2sm
     mask_ids_fname = os.path.expandvars(exp_cfg.mask_ids_fname)
     mask_ids = None
     if os.path.exists(mask_ids_fname):
-        logger.info(f'Loading mask ids from: {mask_ids_fname}')
+        # logger.info(f'Loading mask ids from: {mask_ids_fname}')
         mask_ids = np.load(mask_ids_fname)
         mask_ids = torch.from_numpy(mask_ids).to(device=device)
     else:
@@ -371,7 +371,7 @@ def smplx2smpl(smplxMeshPath,smplPklSavePath,cfg_path=R'./data/smplData/smplx2sm
 
     dataloader = data_obj_dict['dataloader']
 
-    for ii, batch in enumerate(tqdm(dataloader)):
+    for ii, batch in enumerate(dataloader):
         for key in batch:
             if torch.is_tensor(batch[key]):
                 batch[key] = batch[key].to(device=device)
@@ -382,17 +382,28 @@ def smplx2smpl(smplxMeshPath,smplPklSavePath,cfg_path=R'./data/smplData/smplx2sm
         for ii, path in enumerate(paths):
             _, fname = os.path.split(path)
 
-            output_path = os.path.join(
-                output_folder, fname.split('_')[0]+'_smpl.pkl')
-            with open(output_path, 'wb') as f:
-                pkl.dump(var_dict, f)
+            # output_path = os.path.join(
+            #     output_folder, fname.split('_')[0]+'_smpl.pkl')
+            pklPath = smplPklSavePath[:-3] + 'pkl'
+            
+            temData = {'person00':{}}
+            temData['person00'] = {
+                'transl':var_dict['transl'].detach().cpu().numpy()[0],
+                'global_orient':var_dict['global_orient'].detach().cpu().numpy()[0][0],
+                'body_pose':var_dict['body_pose'].detach().cpu().numpy()[0].reshape(-1),
+                'betas':var_dict['betas'].detach().cpu().numpy(),
+            }
 
-            output_path = os.path.join(
-                output_folder, fname.split('_')[0]+'_smpl.obj')
-            meshData = MeshData()
-            meshData.vert = var_dict['vertices'][ii].detach().cpu().numpy()
-            meshData.face = var_dict['faces']+1
-            write_obj(output_path, meshData)
+            with open(pklPath, 'wb') as f:
+                pkl.dump(temData, f)
+
+            # output_path = os.path.join(
+            #     output_folder, fname.split('_')[0]+'_smpl.obj')
+            # objPath = smplPklSavePath[:-3] + 'obj'
+            # meshData = MeshData()
+            # meshData.vert = var_dict['vertices'][ii].detach().cpu().numpy()
+            # meshData.face = var_dict['faces']+1
+            # write_obj(objPath, meshData)
 
 def applyRot2Smpl(pklPath,savePath,Rotm=np.eye(3,3),Tm=np.zeros(3),mode='smpl',gender='male'):
     if mode.lower() == 'smpl':

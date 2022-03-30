@@ -57,6 +57,17 @@ def Scaling_obj(file_name, save_file):
         file.write(data)
     file.close()
 
+def ply2obj(**config):
+    from plyfile import PlyData, PlyElement
+    import numpy as np
+    plydata = PlyData.read(config['file_dir'])
+    vs = plydata.elements[0].data
+    fs = plydata.elements[1].data
+    meshData = MeshData()
+    meshData.vert = np.array(vs)
+    meshData.face = [f[0]+1 for f in fs]
+    write_obj(config['save_dir'], meshData)
+
 if __name__ == '__main__':
     Scaling_obj(
         r'H:\YangYuan\Code\cpp_program\seuvcl-codebase-master\data\graphics\physdata\urdf\0000.obj',
