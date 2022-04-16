@@ -300,10 +300,10 @@ def pkl2smpl(pklPath, mode='smpl', modelPath='./data/smplData/body_models', gend
                     betas = torch.tensor(data['person00']['betas'].astype(np.float32)),
                     global_orient = torch.tensor(data['person00']['global_orient'][None,:].astype(np.float32)),
                     body_pose = torch.tensor(data['person00']['body_pose'][None,:].astype(np.float32)),
-                    left_hand_pose = torch.tensor(data['person00']['left_hand_pose'][None,:].astype(np.float32)),
-                    right_hand_pose = torch.tensor(data['person00']['right_hand_pose'][None,:].astype(np.float32)),
+                    left_hand_pose = torch.tensor(data['person00']['left_hand_pose'][None,:].astype(np.float32)) if 'left_hand_pose' in data['person00'] else torch.tensor(torch.zeros((1,12)).astype(np.float32)),
+                    right_hand_pose = torch.tensor(data['person00']['right_hand_pose'][None,:].astype(np.float32)) if 'right_hand_pose' in data['person00'] else torch.tensor(torch.zeros((1,12)).astype(np.float32)),
                     transl = torch.tensor(data['person00']['transl'][None,:].astype(np.float32)),
-                    jaw_pose = torch.tensor(data['person00']['jaw_pose'][None,:].astype(np.float32)))
+                    jaw_pose = torch.tensor(data['person00']['jaw_pose'][None,:].astype(np.float32)) if 'jaw_pose' in data['person00'] else torch.tensor(torch.zeros((1,3)).astype(np.float32)))
     
     if 'savePath' in config:
         meshData = MeshData()
@@ -314,7 +314,7 @@ def pkl2smpl(pklPath, mode='smpl', modelPath='./data/smplData/body_models', gend
 
 def creatModel(mode='smpl', modelPath='./data/smplData/body_models', gender='male', ext='pkl', **config):
     if mode.lower() == 'smpl':
-        return smplx.create(smplx.create(modelPath,mode,gender=gender))
+        return smplx.create(modelPath,mode,gender=gender)
     elif mode.lower() == 'smplx':
         return smplx.create(modelPath, mode,
                             gender=gender, use_face_contour=False,
