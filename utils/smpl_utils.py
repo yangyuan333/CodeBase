@@ -322,6 +322,84 @@ def creatModel(mode='smpl', modelPath='./data/smplData/body_models', gender='mal
                             num_pca_comps=config['num_pca_comps'] if 'num_pca_comps' in config else 12,
                             ext=ext)
 
+def smpl2smplx(smplMeshPath,smplxPklSavePath,cfg_path=R'./data/smplData/smpl2smplx.yaml'):
+    from transfer_model.data import build_dataloader
+    from transfer_model.transfer_model import run_fitting
+    from transfer_model.utils import read_deformation_transfer
+    from transfer_model.config import read_yaml
+    from smplx import build_layer
+    from loguru import logger
+    import tqdm
+    exp_cfg = read_yaml(cfg_path)
+    exp_cfg.datasets.mesh_folder.data_folder = smplMeshPath
+    exp_cfg.output_folder = os.path.dirname(smplxPklSavePath)
+    device = torch.device('cuda')
+    if not torch.cuda.is_available():
+        logger.error('CUDA is not available!')
+        sys.exit(3)
+
+    logger.remove()
+    logger.add(
+        lambda x: tqdm.write(x, end=''), level=exp_cfg.logger_level.upper(),
+        colorize=True)
+
+    ## 自定义
+    output_folder = os.path.expanduser(os.path.expandvars(exp_cfg.output_folder))
+    # logger.info(f'Saving output to: {output_folder}')
+    os.makedirs(output_folder, exist_ok=True)
+
+    model_path = exp_cfg.body_model.folder
+    body_model = build_layer(model_path, **exp_cfg.body_model)
+    # logger.info(body_model)
+    body_model = body_model.to(device=device)
+
+    deformation_transfer_path = exp_cfg.get('deformation_transfer_path', '')
+    def_matrix = read_deformation_transfer(
+        deformation_transfer_path, device=device)
+
+    # Read mask for valid vertex ids
+    mask_ids_fname = os.path.expandvars(exp_cfg.mask_ids_fname)
+    mask_ids_fname = R'./data/smplData/smplx_mask_ids.npy'
+    mask_ids = None
+    if os.path.exists(mask_ids_fname):
+        # logger.info(f'Loading mask ids from: {mask_ids_fname}')
+        mask_ids = np.load(mask_ids_fname)
+        mask_ids = torch.from_numpy(mask_ids).to(device=device)
+    else:
+        logger.warning(f'Mask ids fname not found: {mask_ids_fname}')
+
+    data_obj_dict = build_dataloader(exp_cfg)
+
+    dataloader = data_obj_dict['dataloader']
+
+    for ii, batch in enumerate(dataloader):
+        for key in batch:
+            if torch.is_tensor(batch[key]):
+                batch[key] = batch[key].to(device=device)
+        var_dict = run_fitting(
+            exp_cfg, batch, body_model, def_matrix, mask_ids)
+        paths = batch['paths']
+
+        for ii, path in enumerate(paths):
+            _, fname = os.path.split(path)
+            # output_path = os.path.join(
+            #     output_folder, fname.split('_')[0]+'_smpl.pkl')
+            pklPath = smplxPklSavePath[:-3] + 'pkl'
+            
+            temData = {'person00':{}}
+            temData['person00'] = {
+                'transl':var_dict['transl'].detach().cpu().numpy()[0],
+                'global_orient':var_dict['global_orient'].detach().cpu().numpy()[0][0],
+                'body_pose':var_dict['body_pose'].detach().cpu().numpy()[0].reshape(-1),
+                'betas':var_dict['betas'].detach().cpu().numpy(),
+                'left_hand_pose':var_dict['left_hand_pose'].detach().cpu().numpy().reshape(-1),
+                'right_hand_pose':var_dict['right_hand_pose'].detach().cpu().numpy().reshape(-1),
+                'jaw_pose':var_dict['jaw_pose'].detach().cpu().numpy().reshape(-1),
+            }
+
+            with open(pklPath, 'wb') as f:
+                pkl.dump(temData, f)
+
 def smplx2smpl(smplxMeshPath,smplPklSavePath,cfg_path=R'./data/smplData/smplx2smpl.yaml'):
     from transfer_model.data import build_dataloader
     from transfer_model.transfer_model import run_fitting
@@ -397,14 +475,6 @@ def smplx2smpl(smplxMeshPath,smplPklSavePath,cfg_path=R'./data/smplData/smplx2sm
             with open(pklPath, 'wb') as f:
                 pkl.dump(temData, f)
 
-            # output_path = os.path.join(
-            #     output_folder, fname.split('_')[0]+'_smpl.obj')
-            # objPath = smplPklSavePath[:-3] + 'obj'
-            # meshData = MeshData()
-            # meshData.vert = var_dict['vertices'][ii].detach().cpu().numpy()
-            # meshData.face = var_dict['faces']+1
-            # write_obj(objPath, meshData)
-
 def applyRot2Smpl(pklPath,savePath,Rotm=np.eye(3,3),Tm=np.zeros(3),mode='smpl',gender='male'):
     if mode.lower() == 'smpl':
         model = creatModel(gender=gender)
@@ -458,3 +528,43 @@ def applyRot2Exmat(rotEx,TEx,Rotm=np.eye(3,3),Tm=np.zeros(3)):
     rotExTem = np.dot(rotEx,np.linalg.inv(Rotm))
     TExTem = TEx - np.dot(rotExTem,Tm[:,None])[:,0]
     return rotExTem, TExTem
+
+if __name__ == '__main__':
+
+    # import glob
+    # for seq in glob.glob(os.path.join(R'H:\YangYuan\ProjectData\HumanObject\dataset\GPAFinal','*')):
+    #     for frame in glob.glob(os.path.join(seq,'pkl','smpl','*')):
+    #         pkl2smpl(
+    #             os.path.join(frame,'Camera00',str(0).zfill(10)+'.pkl'),
+    #             gender='neutral',
+    #             savePath=os.path.join(frame,'Camera00',str(0).zfill(10)+'.obj'),
+    #         )
+
+    # with open(os.path.join(R'H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\fittings\mosh\vicon_03301_01\results\s001_frame_00001__00.00.00.023\smplx','000_vcl.pkl'),'rb') as file:
+    #     data = pkl.load(file)
+    # pkl2smpl(
+    #     os.path.join(R'H:\YangYuan\ProjectData\HumanObject\dataset\GPAFinal\0000_Camera02\pkl\smplx\0000000000\Camera00',str(0).zfill(10)+'.pkl'),
+    #     mode='smplx',
+    #     gender='neutral',
+    #     savePath=os.path.join(R'H:\YangYuan\ProjectData\HumanObject\dataset\GPAFinal\0000_Camera02\pkl\smplx\0000000000\Camera00',str(0).zfill(10)+'.obj'))
+
+    import glob
+    for seq in glob.glob(os.path.join(R'\\105.1.1.2\Body\Human-Data-Physics-v2.0\GPA-testset\annotPkl','*')):
+        seqName = os.path.basename(seq)
+        for camera in glob.glob(os.path.join(seq,'*')):
+            cameraName = os.path.basename(camera)
+            for frame in glob.glob(os.path.join(camera,'*')):
+                frameName = os.path.basename(frame)
+                pkl2smpl()
+
+    import glob
+    for seq in glob.glob(os.path.join(R'H:\YangYuan\ProjectData\HumanObject\dataset\GPAFinal','*')):
+        for frame in glob.glob(os.path.join(seq,'pkl','smpl','*')):
+            smpl2smplx(
+                os.path.join(frame,'Camera00'),
+                os.path.join(seq,'pkl','smplx',os.path.basename(frame),'Camera00',str(0).zfill(10)+'.pkl'))
+            pkl2smpl(
+                os.path.join(seq,'pkl','smplx',os.path.basename(frame),'Camera00',str(0).zfill(10)+'.pkl'),
+                mode='smplx',
+                gender='neutral',
+                savePath=os.path.join(seq,'pkl','smplx',os.path.basename(frame),'Camera00',str(0).zfill(10)+'.obj'))

@@ -4,6 +4,7 @@ class MeshData(object):
         self.face = []
         self.vn = []
         self.color = []
+        self.vt = []
 
 def read_obj(file_name):
     meshData = MeshData()
@@ -17,9 +18,15 @@ def read_obj(file_name):
                 if line_data.__len__() == 7:
                     meshData.color.append([float(line_data[4]),float(line_data[5]),float(line_data[6])])
             elif line_data[0] == 'f':
-                meshData.face.append([int(line_data[1].split('//')[0]),int(line_data[2].split('//')[0]),int(line_data[3].split('//')[0])])           
+                if ('//' in line_data[1]):
+                    meshData.face.append([int(line_data[1].split('//')[0]),int(line_data[2].split('//')[0]),int(line_data[3].split('//')[0])])           
+                elif ('/' in line_data[1]):
+                    meshData.face.append([int(line_data[1].split('/')[0]),int(line_data[2].split('/')[0]),int(line_data[3].split('/')[0])])           
             elif line_data[0] == 'vn':
                 meshData.vn.append([float(line_data[1]),float(line_data[2]),float(line_data[3])])
+            elif line_data[0] == 'vt':
+                meshData.vt.append([float(line_data[1]),float(line_data[2])])
+
         line = f.readline()
     f.close()
     return meshData
