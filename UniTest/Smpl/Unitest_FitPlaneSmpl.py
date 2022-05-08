@@ -8,6 +8,7 @@ sys.path.append('./')
 from utils.rotate_utils import fitPlane, rotatePlane, transPlane, Camera_project
 from utils.smpl_utils import applyRot2Smpl, pkl2smpl
 from utils.obj_utils import MeshData, read_obj, write_obj
+import torch
 
 def Unitest_FitPlaneSmpl():
     a = fitPlane(
@@ -38,6 +39,64 @@ def Unitest_FitPlaneSmpl():
         temRotPaths=pklPaths,
         savePaths=savePaths,
         mode='smplx',
+    )
+    print(Rotm)
+    print(Tm)
+
+def Unitest_FitPlaneSmpl_GPA():
+    a = fitPlane(
+        vertsPath=R'vsTest.txt',
+        flag='y',
+        savePath=R'plane.obj'
+    )
+    pklPaths = []
+    savePaths = []
+
+    temPaths = []
+    import pickle as pkl
+    for pklPath in glob.glob(os.path.join(R'\\105.1.1.2\Body\Human-Data-Physics-v1.0\huawei_data\shuibing_smooth_norot\params','*'))[:1724]:
+        with open(pklPath,'rb') as file:
+            data = pkl.load(file)
+        # with open(R'H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\fittings\mosh\vicon_03301_01\results\s001_frame_00001__00.00.00.023\smplx\000_vcl.pkl','rb') as file:
+        #     data1 = pkl.load(file)
+    
+        temData = {'person00':{}}
+        temData['person00']['pose'] = data['person00']['pose'].astype(np.float32)
+        temData['person00']['body_pose'] = data['person00']['pose'][3:].astype(np.float32)
+        temData['person00']['global_orient'] = data['person00']['pose'][:3].astype(np.float32)
+        temData['person00']['transl'] = data['person00']['transl'][:].astype(np.float32)
+        temData['person00']['betas'] = data['person00']['betas'][None,:].astype(np.float32)
+        with open(
+            os.path.join(R'H:\YangYuan\Code\phy_program\CodeBase\data\huawei\tem',os.path.basename(pklPath)),'wb') as file:
+            pkl.dump(temData,file)
+
+
+    for pklPath in glob.glob(os.path.join(R'H:\YangYuan\Code\phy_program\CodeBase\data\huawei\tem','*')):
+        pklPaths.append(pklPath)
+        savePaths.append(
+            os.path.join(R'H:\YangYuan\Code\phy_program\CodeBase\data\huawei\rot',os.path.basename(pklPath))
+        )
+    Rotm = rotatePlane(
+        a,
+        pklPaths=pklPaths,
+        temRotPaths=savePaths,
+        gender='NEUTRAL',
+        mode='smpl',
+        flag='y',
+    )
+
+    pklPaths = []
+    savePaths = []
+    for pklPath in glob.glob(os.path.join(R'H:\YangYuan\Code\phy_program\CodeBase\data\huawei\rot','*')):
+        pklPaths.append(pklPath)
+        savePaths.append(
+            os.path.join(R'H:\YangYuan\Code\phy_program\CodeBase\data\huawei\trans',os.path.basename(pklPath))
+        )
+    Tm = transPlane(
+        temRotPaths=pklPaths,
+        savePaths=savePaths,
+        gender='NEUTRAL',
+        mode='smpl',
     )
     print(Rotm)
     print(Tm)
@@ -166,31 +225,116 @@ def TestResult():
             )
 
 if __name__ == '__main__':
+    cam = np.loadtxt(R'\\105.1.1.2\Body\Human-Data-Physics-v1.0\huawei_data\shuibing_smooth_norot\cam.txt')
+    np.savetxt(R'\\105.1.1.2\Body\Human-Data-Physics-v1.0\huawei_data\shuibing_smooth_norot\camEx.txt',np.linalg.inv(cam))
+    # from utils.rotate_utils import readVclCamparams
+    # camIns,camExs = readVclCamparams(R'\\105.1.1.2\Body\Human-Data-Physics-v1.0\huawei_data\shuibing_smooth_norot\camparams.txt')
+    import cv2
+    import smplx
+    import pickle as pkl
+    model = smplx.create('./data/smplData/body_models','smpl',gender='NEUTRAL')
+    for imgPath in glob.glob(os.path.join(R'\\105.1.1.2\Body\Human-Data-Physics-v1.0\huawei_data\shuibing_smooth_norot\images','*')):
+        img = cv2.imread(imgPath)
+        pklPath = os.path.join(
+            R'\\105.1.1.2\Body\Human-Data-Physics-v1.0\huawei_data\shuibing_smooth_norot','params',os.path.basename(imgPath)[:-4]+'.pkl'
+        )
+        pklPath_1 = os.path.join(
+            R'\\105.1.1.2\Body\Human-Data-Physics-v1.0\huawei_data\shuibing_smooth_norot','paramsY',os.path.basename(imgPath)[:-4]+'.pkl'
+        )
+        vs_1,js_1,fs_1 = pkl2smpl(pklPath_1,gender='NEUTRAL')
+        with open(pklPath,'rb') as file:
+            data = pkl.load(file)
+        output = model(
+                betas = torch.tensor(data['person00']['betas'][None,:].astype(np.float32)),
+                body_pose = torch.tensor(data['person00']['pose'][None,3:].astype(np.float32)),
+                global_orient = torch.tensor(data['person00']['pose'][None,:3].astype(np.float32)),
+                transl = torch.tensor(data['person00']['transl'][None,:].astype(np.float32)))
+        vs, js, fs = output.vertices.detach().cpu().numpy().squeeze(),output.joints.detach().cpu().numpy().squeeze(),model.faces + 1
+        focal = (img.shape[0]**2 + img.shape[1]**2)**0.5
+        tx = img.shape[1]/2
+        ty = img.shape[0]/2
+        print(np.array([[focal,0,tx],[0,focal,ty],[0,0,1]]))
+        vs = Camera_project(
+            vs,
+            np.eye(4),
+            #np.linalg.inv(cam),
+            np.array([[focal,0,tx],[0,focal,ty],[0,0,1]])
+        )
+        for j in vs:
+            img = cv2.circle(img,(int(j[0]),int(j[1])),2,(255,0,0))
+        cv2.imshow('1',img)
+        cv2.waitKey(0)
+        vs_1 = Camera_project(
+            vs_1,
+            #np.eye(4),
+            np.linalg.inv(cam),
+            np.array([[focal,0,tx],[0,focal,ty],[0,0,1]])
+        )
+        # vs_1 = Camera_project(
+        #     vs_1,
+        #     #np.eye(4),
+        #     camExs[0],
+        #     camIns[0]
+        # )
+        for j in vs_1:
+            img = cv2.circle(img,(int(j[0]),int(j[1])),2,(0,0,255))
+        cv2.imshow('1',img)
+        cv2.waitKey(0)
 
-    with open(R'H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\cam2world\vicon.json', 'rb') as file:
-        cam = json.load(file)
-    cam1 = np.array([
-        [0.99947102, 0.02250866, 0.02347415, 1.340276],
-        [-0.02250866, -0.04222833, 0.99885441, -0.00790659],
-        [0.02347415, -0.99885441, -0.04169936, -0.84238],
-        [0,0,0,1]
-    ])
-    cam = np.dot(cam1,cam)
-    applyRot2Smpl(
-        R'H:\YangYuan\ProjectData\RGB_n.pkl',
-        R'H:\YangYuan\ProjectData\RGB_1.pkl',
-        cam[:3,:3],
-        cam[:3,3],
-        'smplx',
-        'male'
-    )
-    pkl2smpl(
-        R'H:\YangYuan\ProjectData\RGB_1.pkl',
-        'smplx',
-        gender='male',
-        savePath=R'H:\YangYuan\ProjectData\test.obj'
-    )
-    print(1)
+    # path = R'\\105.1.1.2\Body\Human-Data-Physics-v1.0\huawei_data\shuibing_smooth_norot\params'
+    # vstest = []
+    # import pickle as pkl
+    # import smplx
+    # model = smplx.create('./data/smplData/body_models','smpl',gender='NEUTRAL')
+    # idx = 0
+    # for pklPath in glob.glob(os.path.join(path,'*'))[:1724]:
+    #     with open(pklPath, 'rb') as file:
+    #         data = pkl.load(file, encoding='iso-8859-1')
+    #     output = model(
+    #         betas = torch.tensor(data['person00']['betas'][None,:].astype(np.float32)),
+    #         body_pose = torch.tensor(data['person00']['pose'][None,3:].astype(np.float32)),
+    #         global_orient = torch.tensor(data['person00']['pose'][None,:3].astype(np.float32)),
+    #         transl = torch.tensor(data['person00']['transl'][None,:].astype(np.float32)))
+    #     vs,js,fs = output.vertices.detach().cpu().numpy().squeeze(),output.joints.detach().cpu().numpy().squeeze(),model.faces + 1
+    #     vstest.append(js[10])
+    #     vstest.append(js[11])
+    # meshData = MeshData()
+    # meshData.vert = vstest
+    # write_obj('vsTest.txt',meshData)
+    # Unitest_FitPlaneSmpl_GPA()
+    # for pklPath in glob.glob(os.path.join(R'H:\YangYuan\Code\phy_program\CodeBase\data\huawei\trans','*')):
+    #     vs,js,fs = pkl2smpl(
+    #         pklPath,savePath=os.path.join(R'H:\YangYuan\Code\phy_program\CodeBase\data\huawei\obj',os.path.basename(pklPath)[:-4]+'.obj'),
+    #         gender='NEUTRAL')
+
+
+
+
+# if __name__ == '__main__':
+    # with open(R'H:\YangYuan\ProjectData\HumanObject\dataset\PROX\prox_quantiative_dataset\cam2world\vicon.json', 'rb') as file:
+    #     cam = json.load(file)
+    # cam1 = np.array([
+    #     [0.99947102, 0.02250866, 0.02347415, 1.340276],
+    #     [-0.02250866, -0.04222833, 0.99885441, -0.00790659],
+    #     [0.02347415, -0.99885441, -0.04169936, -0.84238],
+    #     [0,0,0,1]
+    # ])
+    # cam = np.dot(cam1,cam)
+    # applyRot2Smpl(
+    #     R'H:\YangYuan\ProjectData\RGB_n.pkl',
+    #     R'H:\YangYuan\ProjectData\RGB_1.pkl',
+    #     cam[:3,:3],
+    #     cam[:3,3],
+    #     'smplx',
+    #     'male'
+    # )
+    # pkl2smpl(
+    #     R'H:\YangYuan\ProjectData\RGB_1.pkl',
+    #     'smplx',
+    #     gender='male',
+    #     savePath=R'H:\YangYuan\ProjectData\test.obj'
+    # )
+    # print(1)
 
 
     # Unitest_FitPlaneSmpl()
